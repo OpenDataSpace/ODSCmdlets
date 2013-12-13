@@ -1,0 +1,8 @@
+*.suo
+Source/*/bin
+obj
+*.vsp
+*.psess
+test_login.txt
+TestResults
+

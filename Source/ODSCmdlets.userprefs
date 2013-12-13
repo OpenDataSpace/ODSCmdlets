@@ -1,0 +1,20 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="OpenDataSpace.Commands/ConnectODSCommand.cs">
+    <Files>
+      <File FileName="OpenDataSpace.Commands/ODSCommandBase.cs" Line="15" Column="73" />
+      <File FileName="OpenDataSpace.Commands/ODSCmdlets.cs" Line="15" Column="73" />
+      <File FileName="OpenDataSpace.Commands/ConnectODSCommand.cs" Line="26" Column="2" />
+      <File FileName="OpenDataSpace.Commands/GetODSUserCommand.cs" Line="15" Column="73" />
+      <File FileName="Test/ConnectionTests.cs" Line="48" Column="13" />
+      <File FileName="Test/UserManagementTests.cs" Line="22" Column="48" />
+      <File FileName="OpenDataSpace.Commands/DisconnectODSCommand.cs" Line="16" Column="14" />
+      <File FileName="Test/TestBase.cs" Line="52" Column="52" />
+      <File FileName="Test/TestShellInterface.cs" Line="24" Column="2" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
