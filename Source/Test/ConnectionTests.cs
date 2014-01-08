@@ -24,7 +24,7 @@ namespace Test
     public class ConnectionTests : TestBase
     {
         [Test]
-        public void TestConnect()
+        public void ConnectODS()
         {
             LoginData login = DefaultLoginData;
             string command = String.Join(" ", new string[] {
@@ -45,11 +45,6 @@ namespace Test
             //Assert.IsNotEmpty(session.SessionId);
         }
 
-        [Test]
-        public void TestConnectFail()
-        {
-
-        }
     }
 }
 

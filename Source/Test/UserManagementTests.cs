@@ -21,10 +21,7 @@ namespace Test
     [TestFixture()]
     public class UserManagementTests : TestBase
     {
-        [Test()]
-        public void TestCase()
-        {
-        }
+
     }
 }
 

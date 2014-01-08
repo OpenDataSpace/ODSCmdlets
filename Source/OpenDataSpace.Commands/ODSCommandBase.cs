@@ -20,9 +20,45 @@ namespace OpenDataSpace.Commands
 {
     public class ODSCommandBase : PSCmdlet
     {
+        private const string _sessionIdVarName = "_ODS_SESSION";
+        private RequestHandler _requestHandler;
+
+        private RequestHandler RequestHandler
+        {
+            get
+            {
+                if (_requestHandler == null)
+                {
+                    // No manual login, try to login with information in session state
+                    var cInfo = SessionState.PSVariable.GetValue(_sessionIdVarName, null) as ConnectionInformation;
+                    if (cInfo == null || !cInfo.IsValid())
+                    {
+                        throw new InvalidOperationException("No connection information provided");
+                    }
+                    _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.Hostname);
+                }
+                return _requestHandler;
+            }
+        }
+
+
         public ODSCommandBase()
         {
         }
+
+        public bool Connect(string username, string password, string hostname)
+        {
+            _requestHandler = new RequestHandler(username, password, hostname);
+            string sId = _requestHandler.Login();
+            if (String.IsNullOrEmpty(sId))
+            {
+                return false; // Login failed
+            }
+            var cInfo = new ConnectionInformation(sId, hostname);
+            SessionState.PSVariable.Set(_sessionIdVarName, cInfo);
+            return true;
+        }
+
     }
 }
 
