@@ -17,34 +17,100 @@ using System;
 using NUnit.Framework;
 using System.Management.Automation;
 using System.Collections.ObjectModel;
+using OpenDataSpace.Commands;
 
 namespace Test
 {
     [TestFixture]
     public class ConnectionTests : TestBase
     {
-        [Test]
-        public void ConnectODS()
+        private string SimpleConnectCommand(LoginData login)
         {
-            LoginData login = DefaultLoginData;
-            string command = String.Join(" ", new string[] {
-                "Connect-ODS",
+            return String.Join(" ", new string[] {
+                CmdletName(typeof(ConnectODSCommand)),
                 "-Host",
-                SingleQuote(login.Host),
+                SingleQuote(login.URL),
                 "-Username",
-                SingleQuote(login.Username),
+                SingleQuote(login.UserName),
                 "-Password",
                 SingleQuote(login.Password)
             });
-            Collection<object> results = Shell.Execute(command);
-            Assert.IsNull(results);
-            //make sure the ODS_SESSION object was created in the shell
-            var session = Shell.GetVariableValue("ODS_SESSION");
-            Assert.IsNotNull(session);
-            //make sure it contains a non-empty SessionId => connecting worked
-            //Assert.IsNotEmpty(session.SessionId);
         }
 
+        [Test]
+        public void ConnectODSSimpleAuth()
+        {
+            Shell.Execute(SimpleConnectCommand(DefaultLoginData));
+            //make sure the session information object was created in the shell
+            var session = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName) as SessionInformation;
+            Assert.IsNotNull(session, "Session Information cannot be found in PS environment.");
+            //make sure we got all things to run a command without logging in again
+            Assert.IsNotNullOrEmpty(session.SessionId);
+            Assert.IsNotNullOrEmpty(session.URL);
+        }
+
+        [Test]
+        public void ConnectODSCredAuth()
+        {
+            LoginData login = DefaultLoginData;
+            string[] commands = 
+            {
+                // password to secure string
+                String.Format("$securepw = ConvertTo-SecureString {0} -asplaintext -force",
+                    SingleQuote(login.Password)),
+                String.Format("$username = {0}", SingleQuote(login.UserName)),
+                // PSCredential object
+                "$cred = New-Object System.Management.Automation.PSCredential($username,$securepw)",
+                // ods connect command
+                String.Format("{0} -Host {1} -Credential $cred", 
+                    CmdletName(typeof(ConnectODSCommand)), SingleQuote(login.URL))
+            };
+            Shell.Execute(commands);
+            //make sure the session information object was created in the shell
+            var session = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName) as SessionInformation;
+            Assert.IsNotNull(session, "Session Information cannot be found in PS environment.");
+            //make sure we got all things to run a command without logging in again
+            Assert.IsNotNullOrEmpty(session.SessionId);
+            Assert.IsNotNullOrEmpty(session.URL);
+        }
+
+        [Test]
+        public void ConnectODSWrongAuth()
+        {
+            LoginData login = new LoginData(DefaultLoginData);
+            login.Password = login.Password + "foobar"; //arbitrary pw modification
+            try
+            {
+                Shell.Execute(SimpleConnectCommand(login));
+                Assert.True(false, "Login seemed to work with wrong password!");
+            }
+            catch (CmdletInvocationException exception)
+            {
+                var realException = exception.InnerException as ConnectionFailedException;
+                Assert.IsNotNull(realException, "Wrong exception thrown for failed login");
+                Assert.True(realException.Message.Contains("Error Code: 2"),
+                    String.Format("Wrong error for failed login: {0}", realException.Message));
+            }
+        }
+
+        [Test]
+        public void DisconnectODS()
+        {
+            string[] commands = {
+                SimpleConnectCommand(DefaultLoginData),
+                CmdletName(typeof(DisconnectODSCommand))
+            };
+            Shell.Execute(commands);
+            var sessionInfo = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName);
+            Assert.IsNull(sessionInfo);
+        }
+
+        [Test]
+        public void DisconnectWorksAlways()
+        {
+            // disconnect without connecting doesnÄt result in an exception
+            Shell.Execute(CmdletName(typeof(DisconnectODSCommand)));
+        }
     }
 }
 

@@ -15,13 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Management.Automation;
+using System.Security;
 
 namespace OpenDataSpace.Commands
 {
     public class ODSCommandBase : PSCmdlet
     {
-        private const string _sessionIdVarName = "_ODS_SESSION";
         private RequestHandler _requestHandler;
+
+        public const string SessionInfoVariableName = "_ODS_SESSION";
 
         private RequestHandler RequestHandler
         {
@@ -30,12 +32,12 @@ namespace OpenDataSpace.Commands
                 if (_requestHandler == null)
                 {
                     // No manual login, try to login with information in session state
-                    var cInfo = SessionState.PSVariable.GetValue(_sessionIdVarName, null) as ConnectionInformation;
+                    var cInfo = SessionState.PSVariable.GetValue(SessionInfoVariableName, null) as SessionInformation;
                     if (cInfo == null || !cInfo.IsValid())
                     {
-                        throw new InvalidOperationException("No connection information provided");
+                        throw new ConnectionFailedException("No session information provided", "NoSessionInfo");
                     }
-                    _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.Hostname);
+                    _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.URL);
                 }
                 return _requestHandler;
             }
@@ -46,17 +48,22 @@ namespace OpenDataSpace.Commands
         {
         }
 
-        public bool Connect(string username, string password, string hostname)
+        public void Connect(string username, string password, string url)
         {
-            _requestHandler = new RequestHandler(username, password, hostname);
+            Connect(username, RequestHandler.ToSecureString(password), url);
+        }         
+
+        public void Connect(string username, SecureString password, string url)
+        {
+            _requestHandler = new RequestHandler(username, password, url);
             string sId = _requestHandler.Login();
-            if (String.IsNullOrEmpty(sId))
-            {
-                return false; // Login failed
-            }
-            var cInfo = new ConnectionInformation(sId, hostname);
-            SessionState.PSVariable.Set(_sessionIdVarName, cInfo);
-            return true;
+            var cInfo = new SessionInformation(sId, url);
+            SessionState.PSVariable.Set(SessionInfoVariableName, cInfo);
+        }
+
+        public void Disconnect()
+        {
+            SessionState.PSVariable.Remove(SessionInfoVariableName);
         }
 
     }

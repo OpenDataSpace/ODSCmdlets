@@ -15,16 +15,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
+using System.Management.Automation;
 using System.Net;
 using System.Reflection;
+using System.Security;
 
 namespace Test
 {
     public class LoginData
     {
-        public string Host { get; set; }
-        public string Username { get; set; }
+        public string URL { get; set; }
+        public string UserName { get; set; }
         public string Password { get; set; }
+
+        public LoginData(string host, string username, string password)
+        {
+            URL = host;
+            UserName = username;
+            Password = password;
+        }
+
+        public LoginData(LoginData login)
+        {
+            URL = login.URL;
+            UserName = login.UserName;
+            Password = login.Password;
+        }
     }
 
     public class TestBase
@@ -67,10 +83,21 @@ namespace Test
                 (sender, certificate, chain, sslPolicyErrors) => true;
         }
 
+        // General helper stuff
+
+        internal string CmdletName(Type type)
+        {
+            var attribute = System.Attribute.GetCustomAttribute(type, typeof(CmdletAttribute)) 
+                as CmdletAttribute;
+            return String.Format("{0}-{1}", attribute.VerbName, attribute.NounName);
+        }
+
         internal string SingleQuote(string escapable)
         {
             return String.Format("'{0}'", escapable);
         }
+
+        // Private stuff
 
         private LoginData ReadLoginData(string filename)
         {
@@ -82,12 +109,7 @@ namespace Test
                                   filename)
                 );
             }
-            return new LoginData
-            {
-                Host = data[0],
-                Username = data[1],
-                Password = data[2]
-            };
+            return new LoginData(data[0], data[1], data[2]);
         }
 
     }

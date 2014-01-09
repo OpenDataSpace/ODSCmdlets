@@ -15,7 +15,7 @@ namespace Test
         public void LoginTest()
         {
             LoginData login = DefaultLoginData;
-            var requestHandler = new RequestHandler(login.Username, login.Password, login.Host);
+            var requestHandler = new RequestHandler(login.UserName, login.Password, login.URL);
             Assert.False(String.IsNullOrEmpty(requestHandler.Login()));
         }
 

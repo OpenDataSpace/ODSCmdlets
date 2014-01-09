@@ -34,11 +34,19 @@ namespace Test
 
         public Collection<object> Execute(string command)
         {
+            return Execute(new string[] { command });
+        }
+
+        public Collection<object> Execute(string[] commands)
+        {
             Collection<PSObject> results = null;
             Collection<object> resultObjects = new Collection<object>();
             using (var pipeline = _runspace.CreatePipeline())
             {
-                pipeline.Commands.AddScript(command, false);
+                foreach (var command in commands)
+                {
+                    pipeline.Commands.AddScript(command, false);
+                }
                 results = pipeline.Invoke();
                 if (pipeline.Error.Count > 0)
                 {

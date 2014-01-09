@@ -40,7 +40,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="ConnectionInformation.cs" />
+    <Compile Include="ConnectionFailedException.cs" />
+    <Compile Include="ReportableException.cs" />
+    <Compile Include="SessionInformation.cs" />
     <Compile Include="ODSCmdlets.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -70,4 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup />
+  <PropertyGroup>
+    <PostBuildEvent>"C:\Windows\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exe" $(TargetPath)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
