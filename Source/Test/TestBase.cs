@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 
 namespace Test
@@ -57,6 +58,13 @@ namespace Test
                 }
                 return _shell;
             }
+        }
+
+        public TestBase()
+        {
+            // Should avoid problems with SSL and tests systems without valid certificate
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, sslPolicyErrors) => true;
         }
 
         internal string SingleQuote(string escapable)

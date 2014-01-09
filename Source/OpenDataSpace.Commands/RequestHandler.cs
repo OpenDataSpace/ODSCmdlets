@@ -39,13 +39,12 @@ namespace OpenDataSpace.Commands
             request.RequestFormat = DataFormat.Json;
             var response = _client.Execute<T>(request);
 
-                if (response.ErrorException != null)
-                {
-                    const string message = "Error retrieving response.  Check inner details for more info.";
-                    var twilioException = new ApplicationException(message, response.ErrorException);
-                    throw twilioException;
-                }
-                return response.Data;
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                string message = String.Format("Error retrieving response: {0}.", response.ErrorMessage);
+                throw new ApplicationException(message, response.ErrorException);
+            }
+            return response.Data;
         }
         
         public string Login()
@@ -57,16 +56,22 @@ namespace OpenDataSpace.Commands
                 password = _password
             });
             var response = Execute<LoginResponse>(request);
+            if (response == null)
+            {
+                // TODO: Connection failed
+                return null;
+            }
             if (!response.success)
             {
                 // TODO: throw error, with error code and message
+                return null;
             }
             return response.sessionId;
         }
 
         private string UrlFromHostname(string hostname)
         {
-            return string.Format("https://{0}/adminapi", hostname);
+            return string.Format("https://{0}", hostname);
         }
     }
 }
