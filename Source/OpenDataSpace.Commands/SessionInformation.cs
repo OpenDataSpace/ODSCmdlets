@@ -5,24 +5,24 @@ using System.Text;
 
 namespace OpenDataSpace.Commands
 {
-    class ConnectionInformation
+    class SessionInformation
     {
-        public string Hostname { get; set; }
+        public string URL { get; set; }
         public string SessionId { get; set; }
 
-        public ConnectionInformation()
+        public SessionInformation()
         {
         }
 
-        public ConnectionInformation(string sessionId, string hostname)
+        public SessionInformation(string sessionId, string url)
         {
-            Hostname = hostname;
+            URL = url;
             SessionId = sessionId;
         }
 
         public bool IsValid()
         {
-            return !String.IsNullOrEmpty(Hostname) && !String.IsNullOrEmpty(SessionId);
+            return !String.IsNullOrEmpty(URL) && !String.IsNullOrEmpty(SessionId);
         }
     }
 }

@@ -4,6 +4,8 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 
 namespace OpenDataSpace.Commands
@@ -13,10 +15,15 @@ namespace OpenDataSpace.Commands
         private readonly IRestClient _client;
 
         readonly string _username;
-        readonly string _password;
+        readonly SecureString _password;
         readonly string _sessionId;
 
         public RequestHandler(string username, string password, string hostname)
+            : this(username, ToSecureString(password), hostname)
+        {
+        }
+
+        public RequestHandler(string username, SecureString password, string hostname)
         {
             _client = new RestClient(UrlFromHostname(hostname));
             _username = username;
@@ -41,8 +48,9 @@ namespace OpenDataSpace.Commands
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
-                string message = String.Format("Error retrieving response: {0}.", response.ErrorMessage);
-                throw new ApplicationException(message, response.ErrorException);
+                string message = String.Format("Error retrieving response: {0}. {1}",
+                    response.ResponseStatus.ToString(), response.ErrorMessage);
+                throw new ConnectionFailedException(message, "RequestFailed", response.ErrorException);
             }
             return response.Data;
         }
@@ -53,20 +61,47 @@ namespace OpenDataSpace.Commands
             request.RequestFormat = DataFormat.Json;
             request.AddBody(new LoginRequest {
                 username = _username,
-                password = _password
+                password = ToInsecureString(_password)
             });
             var response = Execute<LoginResponse>(request);
             if (response == null)
             {
-                // TODO: Connection failed
-                return null;
+                throw new ConnectionFailedException("Login request failed. Maybe the URL is incorrect?",
+                    "ResponseDataIsNull");
             }
             if (!response.success)
             {
-                // TODO: throw error, with error code and message
-                return null;
+                string message = String.Format("Login failed: {0}. Error Code: {1}",
+                    response.message, response.errorCode);
+                throw new ConnectionFailedException(message, "ODSLoginError");
             }
             return response.sessionId;
+        }
+
+
+        internal static SecureString ToSecureString(string str)
+        {
+            var ss = new SecureString();
+            foreach (char c in str.ToCharArray())
+            {
+                ss.AppendChar(c);
+            }
+            ss.MakeReadOnly();
+            return ss;
+        }
+
+        private static string ToInsecureString(SecureString secureStr)
+        {
+            var bstr = Marshal.SecureStringToBSTR(secureStr);
+            try
+            {
+                string str = Marshal.PtrToStringBSTR(bstr);
+                return str;
+            }
+            finally
+            {
+                Marshal.ZeroFreeBSTR(bstr);
+            }
         }
 
         private string UrlFromHostname(string hostname)

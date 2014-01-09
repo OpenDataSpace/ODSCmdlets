@@ -14,13 +14,60 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Management.Automation;
 
 namespace OpenDataSpace.Commands
 {
+    [Cmdlet(VerbsCommunications.Connect, "ODS", DefaultParameterSetName="CredAuth")]
     public class ConnectODSCommand : ODSCommandBase
     {
+        [Alias("Host", "h")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = "CredAuth")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = "SimpleAuth")]
+        public string URL { get; set; }
+
+        [Alias("c")]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = "CredAuth")]
+        public PSCredential Credential { get; set; }
+
+        [Alias("User", "u")]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = "SimpleAuth")]
+        public string UserName { get; set; }
+
+        [Alias("p")]
+        [Parameter(Position = 2, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = "SimpleAuth")]
+        public string Password { get; set; }
+
         public ConnectODSCommand()
         {
+        }
+
+        protected override void ProcessRecord()
+        {
+            try
+            {
+                if (Credential != null) //cred auth
+                {
+                    Connect(NormalizeUserName(Credential.UserName), Credential.Password, URL);
+                }
+                else // simple auth
+                {
+                    Connect(UserName, Password, URL);
+                }
+            }
+            catch (ReportableException e)
+            {
+                ThrowTerminatingError(e.ErrorRecord);
+            }
+        }
+
+        private string NormalizeUserName(string username)
+        {
+            if (username.StartsWith(@"\"))
+            {
+                return username.Remove(0, 1);
+            }
+            return username;
         }
     }
 }
