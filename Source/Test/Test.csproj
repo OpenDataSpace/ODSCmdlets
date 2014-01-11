@@ -37,6 +37,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="GroupManagementTests.cs" />
     <Compile Include="RequestHandlerTests.cs" />
     <Compile Include="ConnectionTests.cs" />
     <Compile Include="UserManagementTests.cs" />

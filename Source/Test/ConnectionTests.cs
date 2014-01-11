@@ -44,9 +44,7 @@ namespace Test
             //make sure the session information object was created in the shell
             var session = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName) as SessionInformation;
             Assert.IsNotNull(session, "Session Information cannot be found in PS environment.");
-            //make sure we got all things to run a command without logging in again
-            Assert.IsNotNullOrEmpty(session.SessionId);
-            Assert.IsNotNullOrEmpty(session.URL);
+            Assert.True(session.IsValid(), "Invalid Session Information");
         }
 
         [Test]
@@ -69,9 +67,7 @@ namespace Test
             //make sure the session information object was created in the shell
             var session = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName) as SessionInformation;
             Assert.IsNotNull(session, "Session Information cannot be found in PS environment.");
-            //make sure we got all things to run a command without logging in again
-            Assert.IsNotNullOrEmpty(session.SessionId);
-            Assert.IsNotNullOrEmpty(session.URL);
+            Assert.True(session.IsValid(), "Invalid Session Information");
         }
 
         [Test]

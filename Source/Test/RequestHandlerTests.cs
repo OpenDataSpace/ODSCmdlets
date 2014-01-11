@@ -16,7 +16,7 @@ namespace Test
         {
             LoginData login = DefaultLoginData;
             var requestHandler = new RequestHandler(login.UserName, login.Password, login.URL);
-            Assert.False(String.IsNullOrEmpty(requestHandler.Login()));
+            Assert.IsNotNullOrEmpty(requestHandler.Login());
         }
 
     }

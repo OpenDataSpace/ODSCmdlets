@@ -5,12 +5,8 @@ using System.Text;
 
 namespace OpenDataSpace.Commands.RequestData
 {
-    class LoginResponse
+    class LoginResponse : DataspaceResponse
     {
         public string sessionId { get; set; }
-        public bool success { get; set; }
-        public string errorClass { get; set; }
-        public string errorCode { get; set; }
-        public string message { get; set; }
     }
 }

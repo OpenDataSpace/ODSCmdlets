@@ -57,7 +57,7 @@ namespace OpenDataSpace.Commands
         {
             _requestHandler = new RequestHandler(username, password, url);
             string sId = _requestHandler.Login();
-            var cInfo = new SessionInformation(sId, url);
+            var cInfo = new SessionInformation(sId, url, username);
             SessionState.PSVariable.Set(SessionInfoVariableName, cInfo);
         }
 

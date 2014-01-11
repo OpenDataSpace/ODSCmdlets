@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ConnectionFailedException.cs" />
     <Compile Include="ReportableException.cs" />
+    <Compile Include="RequestData\LoginResponse.cs" />
     <Compile Include="SessionInformation.cs" />
     <Compile Include="ODSCmdlets.cs">
       <SubType>Component</SubType>
@@ -52,7 +53,7 @@
     <Compile Include="DisconnectODSCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestData\LoginRequest.cs" />
-    <Compile Include="RequestData\LoginResponse.cs" />
+    <Compile Include="RequestData\DataspaceResponse.cs" />
     <Compile Include="RequestHandler.cs" />
     <Compile Include="ResourceUris.cs" />
   </ItemGroup>
