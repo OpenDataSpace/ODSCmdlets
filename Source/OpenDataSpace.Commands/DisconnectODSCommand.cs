@@ -27,7 +27,7 @@ namespace OpenDataSpace.Commands
 
         protected override void BeginProcessing()
         {
-            Disconnect();
+            WriteObject(Disconnect());
         }
     }
 }

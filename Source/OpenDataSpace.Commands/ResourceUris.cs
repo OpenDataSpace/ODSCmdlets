@@ -8,5 +8,7 @@ namespace OpenDataSpace.Commands
     public static class ResourceUris
     {
         public const string Login = "/session/login";
+        public const string Logout = "/session/logout";
+        public const string Object = "/object";
     }
 }

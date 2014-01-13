@@ -96,16 +96,20 @@ namespace Test
                 SimpleConnectCommand(DefaultLoginData),
                 CmdletName(typeof(DisconnectODSCommand))
             };
-            Shell.Execute(commands);
+            var res = Shell.Execute(commands);
             var sessionInfo = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName);
-            Assert.IsNull(sessionInfo);
+            Assert.IsNull(sessionInfo, "Session info was not deleted");
+            Assert.Greater(res.Count, 0, "No return value");
+            Assert.AreEqual(true, res[0], "Logout unsuccessful");
         }
 
         [Test]
         public void DisconnectWorksAlways()
         {
-            // disconnect without connecting doesnÄt result in an exception
-            Shell.Execute(CmdletName(typeof(DisconnectODSCommand)));
+            // disconnect without connecting doesn't result in an exception
+            var res = Shell.Execute(CmdletName(typeof(DisconnectODSCommand)));
+            Assert.Greater(res.Count, 0, "No return value");
+            Assert.AreEqual(false, res[0]);
         }
     }
 }

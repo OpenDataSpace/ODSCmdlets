@@ -32,12 +32,10 @@ namespace OpenDataSpace.Commands
                 if (_requestHandler == null)
                 {
                     // No manual login, try to login with information in session state
-                    var cInfo = SessionState.PSVariable.GetValue(SessionInfoVariableName, null) as SessionInformation;
-                    if (cInfo == null || !cInfo.IsValid())
+                    if (!ReadSessionInfo())
                     {
                         throw new ConnectionFailedException("No session information provided", "NoSessionInfo");
                     }
-                    _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.URL);
                 }
                 return _requestHandler;
             }
@@ -50,7 +48,7 @@ namespace OpenDataSpace.Commands
 
         public void Connect(string username, string password, string url)
         {
-            Connect(username, RequestHandler.ToSecureString(password), url);
+            Connect(username, Utility.StringToSecureString(password), url);
         }         
 
         public void Connect(string username, SecureString password, string url)
@@ -61,11 +59,28 @@ namespace OpenDataSpace.Commands
             SessionState.PSVariable.Set(SessionInfoVariableName, cInfo);
         }
 
-        public void Disconnect()
+        public bool Disconnect()
         {
+            if (!ReadSessionInfo())
+            {
+                return false;
+            }
+            bool ret = RequestHandler.Logout();
             SessionState.PSVariable.Remove(SessionInfoVariableName);
+            return ret;
         }
 
+
+        private bool ReadSessionInfo()
+        {
+            var cInfo = SessionState.PSVariable.GetValue(SessionInfoVariableName, null) as SessionInformation;
+            if (cInfo == null || !cInfo.IsValid())
+            {
+                return false;
+            }
+            _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.URL);
+            return true;
+        }
     }
 }
 

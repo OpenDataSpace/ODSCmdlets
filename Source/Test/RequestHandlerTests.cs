@@ -19,5 +19,21 @@ namespace Test
             Assert.IsNotNullOrEmpty(requestHandler.Login());
         }
 
+        [Test]
+        public void LogoutTest()
+        {
+            LoginData login = DefaultLoginData;
+            var requestHandler = new RequestHandler(login.UserName, login.Password, login.URL);
+            requestHandler.Login();
+            Assert.True(requestHandler.Logout());
+        }
+
+        [Test]
+        public void LogoutWithoutLoginTest()
+        {
+            LoginData login = DefaultLoginData;
+            var requestHandler = new RequestHandler(login.UserName, login.Password, login.URL);
+            Assert.False(requestHandler.Logout());
+        }
     }
 }

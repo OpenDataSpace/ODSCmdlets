@@ -40,6 +40,11 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="RequestData\DataspaceRequest.cs" />
+    <Compile Include="RequestData\LogoutRequest.cs" />
+    <Compile Include="RequestData\ObjectRequest.cs" />
+    <Compile Include="RequestData\ObjectResponse.cs" />
+    <Compile Include="Utility.cs" />
     <Compile Include="ConnectionFailedException.cs" />
     <Compile Include="ReportableException.cs" />
     <Compile Include="RequestData\LoginResponse.cs" />

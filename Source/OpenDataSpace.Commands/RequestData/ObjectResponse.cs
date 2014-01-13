@@ -6,9 +6,9 @@ using System.Text;
 
 namespace OpenDataSpace.Commands.RequestData
 {
-    class LoginResponse : DataspaceResponse
+    class ObjectResponse : DataspaceResponse
     {
-        [DeserializeAs(Name = "sessionId", Attribute = true)]
-        public string SessionId { get; set; }
+        [DeserializeAs(Name="data", Attribute=true)]
+        public object Data { get; set; }
     }
 }
