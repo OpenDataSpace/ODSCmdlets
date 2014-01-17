@@ -9,26 +9,22 @@ namespace OpenDataSpace.Commands.RequestData
 {
     class ObjectRequest : DataspaceRequest
     {
-        private string _sessionId;
         private Method _method;
         private List<KeyValuePair<string, object>> _parameters;
 
-        public override string RequestName
-        {
-            get { return "Object"; }
-        }
+        public long ObjectId { get; set; }
 
-        public ObjectRequest(string sessionId, Method method)
+        public ObjectRequest( Method method)
         {
-            _sessionId = sessionId;
+            RequestName = "Object";
             _method = method;
             _parameters = new List<KeyValuePair<string, object>>();
         }
 
-        public override RestRequest CreateRestRequest()
+        public override RestRequest CreateRestRequest(string sessionId)
         {
-            var request = new RestRequest(ResourceUris.Object, _method);
-            request.AddParameter(SessionIdParameterName, _sessionId);
+            var request = new RestRequest(BuildUri(), _method);
+            request.AddParameter(SessionIdParameterName, sessionId);
             foreach (var param in _parameters)
             {
                 if (param.Value is string)
@@ -41,7 +37,8 @@ namespace OpenDataSpace.Commands.RequestData
                 }
                 else
                 {
-                    request.AddParameter(param.Key, request.JsonSerializer.Serialize(param.Value));
+                    var serialized = request.JsonSerializer.Serialize(param.Value);
+                    request.AddParameter(param.Key, serialized);
                 }
             }
             return request;
@@ -55,6 +52,20 @@ namespace OpenDataSpace.Commands.RequestData
         public void AskForProperty(string name)
         {
             AddParameter("properties", name);
+        }
+
+        public void SetData(object data)
+        {
+            AddParameter("data", data);
+        }
+
+        private string BuildUri()
+        {
+            if (ObjectId < 1)
+            {
+                return ResourceUris.Object;
+            }
+            return String.Format("{0}/{1}", ResourceUris.Object, ObjectId);
         }
     }
 }

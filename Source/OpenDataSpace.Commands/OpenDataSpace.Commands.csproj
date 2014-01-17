@@ -40,15 +40,17 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Objects\NamedObject.cs" />
     <Compile Include="RequestData\DataspaceRequest.cs" />
+    <Compile Include="RequestData\GroupRequestFactory.cs" />
     <Compile Include="RequestData\LogoutRequest.cs" />
-    <Compile Include="RequestData\ObjectRequest.cs" />
     <Compile Include="RequestData\ObjectResponse.cs" />
+    <Compile Include="RequestData\ObjectRequest.cs" />
     <Compile Include="Utility.cs" />
-    <Compile Include="ConnectionFailedException.cs" />
+    <Compile Include="RequestFailedException.cs" />
     <Compile Include="ReportableException.cs" />
     <Compile Include="RequestData\LoginResponse.cs" />
-    <Compile Include="SessionInformation.cs" />
+    <Compile Include="Objects\SessionInformation.cs" />
     <Compile Include="ODSCmdlets.cs">
       <SubType>Component</SubType>
     </Compile>

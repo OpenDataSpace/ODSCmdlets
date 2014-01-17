@@ -8,9 +8,10 @@ namespace OpenDataSpace.Commands.RequestData
 {
     public abstract class DataspaceRequest
     {
-        public const string SessionIdParameterName = "sessionId";
-        public abstract string RequestName { get; }
+        internal const string SessionIdParameterName = "sessionId";
+        public string RequestName { get; set; }
 
-        public abstract RestRequest CreateRestRequest();
+
+        public abstract RestRequest CreateRestRequest(string sessionId);
     }
 }

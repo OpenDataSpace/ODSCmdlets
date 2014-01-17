@@ -1,3 +1,4 @@
+using OpenDataSpace.Commands.Objects;
 // ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
 // Copyright (C) 2013  <name of author>
 //
@@ -34,7 +35,7 @@ namespace OpenDataSpace.Commands
                     // No manual login, try to login with information in session state
                     if (!ReadSessionInfo())
                     {
-                        throw new ConnectionFailedException("No session information provided", "NoSessionInfo");
+                        throw new RequestFailedException("No session information provided", "NoSessionInfo");
                     }
                 }
                 return _requestHandler;
@@ -69,7 +70,6 @@ namespace OpenDataSpace.Commands
             SessionState.PSVariable.Remove(SessionInfoVariableName);
             return ret;
         }
-
 
         private bool ReadSessionInfo()
         {

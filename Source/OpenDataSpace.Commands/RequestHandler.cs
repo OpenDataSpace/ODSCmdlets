@@ -48,19 +48,19 @@ namespace OpenDataSpace.Commands
             {
                 string message = String.Format("Error retrieving response: {0}. {1}",
                     response.ResponseStatus.ToString(), response.ErrorMessage);
-                throw new ConnectionFailedException(message, "RequestFailed", response.ErrorException);
+                throw new RequestFailedException(message, "RequestFailed", response.ErrorException);
             }
             return response.Data;
         }
 
         public T Execute<T>(DataspaceRequest request) where T : DataspaceResponse, new()
         {
-            var response = Execute<T>(request.CreateRestRequest());
+            var response = Execute<T>(request.CreateRestRequest(_sessionId));
             if (response == null)
             {
                 string message = String.Format("{0} request failed. Maybe the URL is incorrect?",
                     request.RequestName);
-                throw new ConnectionFailedException(message,
+                throw new RequestFailedException(message,
                     "ResponseDataIsNull");
             }
             return response;
@@ -73,7 +73,7 @@ namespace OpenDataSpace.Commands
             {
                 string message = String.Format("{0} failed: {1}. Error Code: {2}",
                     request.RequestName, response.Message, response.ErrorCode);
-                throw new ConnectionFailedException(message, "DataspaceRequestNotSuccessfull");
+                throw new RequestFailedException(message, "DataspaceRequestNotSuccessfull");
             }
             return response;
         }
@@ -92,11 +92,7 @@ namespace OpenDataSpace.Commands
 
         public bool Logout()
         {
-            if (String.IsNullOrEmpty(_sessionId))
-            {
-                // TODO: throw exception
-            }
-            var request = new LogoutRequest(_sessionId);
+            var request = new LogoutRequest();
             var response = Execute<DataspaceResponse>(request);
             return response.Success;
         }

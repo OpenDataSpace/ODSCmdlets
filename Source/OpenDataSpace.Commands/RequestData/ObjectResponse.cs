@@ -1,4 +1,5 @@
-﻿using RestSharp.Deserializers;
+﻿using OpenDataSpace.Commands.Objects;
+using RestSharp.Deserializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,9 @@ using System.Text;
 
 namespace OpenDataSpace.Commands.RequestData
 {
-    class ObjectResponse : DataspaceResponse
+    class ObjectResponse<T> : DataspaceResponse where T : new()
     {
-        [DeserializeAs(Name="data", Attribute=true)]
-        public object Data { get; set; }
+        [DeserializeAs(Name = "data", Attribute = true)]
+        public T Data { get; set; }
     }
 }

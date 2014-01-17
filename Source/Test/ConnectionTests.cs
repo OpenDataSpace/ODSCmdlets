@@ -82,7 +82,7 @@ namespace Test
             }
             catch (CmdletInvocationException exception)
             {
-                var realException = exception.InnerException as ConnectionFailedException;
+                var realException = exception.InnerException as RequestFailedException;
                 Assert.IsNotNull(realException, "Wrong exception thrown for failed login");
                 Assert.True(realException.Message.Contains("Error Code: 2"),
                     String.Format("Wrong error for failed login: {0}", realException.Message));

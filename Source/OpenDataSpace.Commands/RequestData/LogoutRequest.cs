@@ -8,22 +8,17 @@ namespace OpenDataSpace.Commands.RequestData
 {
     class LogoutRequest : DataspaceRequest
     {
-        private string _sessionId;
 
-        public override string RequestName
+        public LogoutRequest()
+            : base()
         {
-            get { return "Logout"; }
+            RequestName = "Logout";
         }
 
-        public LogoutRequest(string sessionId)
-        {
-            _sessionId = sessionId;
-        }
-
-        public override RestRequest CreateRestRequest()
+        public override RestRequest CreateRestRequest(string sessionId)
         {
             var request = new RestRequest(ResourceUris.Logout, Method.POST);
-            request.AddParameter(SessionIdParameterName, _sessionId);
+            request.AddParameter(SessionIdParameterName, sessionId);
             return request;
         }
     }

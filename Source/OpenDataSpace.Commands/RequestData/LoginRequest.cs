@@ -12,19 +12,16 @@ namespace OpenDataSpace.Commands.RequestData
         private string _username;
         private SecureString _password;
 
-        public override string RequestName
-        {
-            get { return "Login"; }
-        }
-
         public LoginRequest(string username, SecureString password)
         {
+            RequestName = "Login";
             _username = username;
             _password = password;
         }
 
-        public override RestRequest CreateRestRequest()
+        public override RestRequest CreateRestRequest(string sessionId)
         {
+            // sessionId is useless, we're not logged in anyway!
             var request = new RestRequest(ResourceUris.Login, Method.POST);
             request.RequestFormat = DataFormat.Json;
             request.AddBody(new {
