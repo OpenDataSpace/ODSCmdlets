@@ -28,7 +28,7 @@ namespace Test
         [TearDown]
         public void RemoveAddedGroups()
         {
-            //TODO: get the group with _testGroupName and remove it when found
+            //TODO: get the group with _testGroupName and remove it when found instead of using _newGroups
             foreach (long id in _newGroups)
             {
                 var req = GroupRequestFactory.CreateDeleteGroupRequest(id);

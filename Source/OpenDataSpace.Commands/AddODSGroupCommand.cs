@@ -25,7 +25,7 @@ namespace OpenDataSpace.Commands
                 {
                     var request = GroupRequestFactory.CreateAddGroupRequest(curName, Scope.Equals(GroupScope.Global));
                     // TODO: check use of ShouldProcess
-                    if (ShouldProcess(String.Format("Add Group '{0}' to DataSpace", curName)))
+                    if (ShouldProcess(curName))
                     {
                         var data = RequestHandler.ExecuteAndUnpack<NamedObject>(request);
                         WriteObject(data);

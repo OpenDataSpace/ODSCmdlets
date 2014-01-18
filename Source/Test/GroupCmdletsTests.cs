@@ -29,6 +29,7 @@ namespace Test
         [TearDown]
         public void RemoveAddedGroups()
         {
+            //TODO: get the group with _testGroupName(2) and remove it when found instead of using _removeGroups
             foreach (var id in _removeGroups)
             {
                 DoRemoveGroup(id);

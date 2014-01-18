@@ -21,8 +21,7 @@ namespace OpenDataSpace.Commands
                 foreach (var curId in Id)
                 {
                     var request = GroupRequestFactory.CreateDeleteGroupRequest(curId);
-                    // TODO: check use of ShouldProcess regarding the passed message
-                    if (ShouldProcess(String.Format("Remove Group {0} from DataSpace", curId)))
+                    if (ShouldProcess(curId.ToString()))
                     {
                         RequestHandler.SuccessfullyExecute<DataspaceResponse>(request);
                     }
