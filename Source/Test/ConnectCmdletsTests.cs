@@ -24,19 +24,6 @@ namespace Test
     [TestFixture]
     public class ConnectionTests : TestBase
     {
-        private string SimpleConnectCommand(LoginData login)
-        {
-            return String.Join(" ", new string[] {
-                CmdletName(typeof(ConnectODSCommand)),
-                "-Host",
-                SingleQuote(login.URL),
-                "-Username",
-                SingleQuote(login.UserName),
-                "-Password",
-                SingleQuote(login.Password)
-            });
-        }
-
         [Test]
         public void ConnectODSSimpleAuth()
         {

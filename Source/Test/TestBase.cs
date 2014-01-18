@@ -102,6 +102,19 @@ namespace Test
 
         // General helper stuff
 
+        internal string SimpleConnectCommand(LoginData login)
+        {
+            return String.Join(" ", new string[] {
+                CmdletName(typeof(ConnectODSCommand)),
+                "-Host",
+                SingleQuote(login.URL),
+                "-Username",
+                SingleQuote(login.UserName),
+                "-Password",
+                SingleQuote(login.Password)
+            });
+        }
+
         internal string CmdletName(Type type)
         {
             var attribute = System.Attribute.GetCustomAttribute(type, typeof(CmdletAttribute)) 

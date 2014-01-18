@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OpenDataSpace.Commands.RequestData
+namespace OpenDataSpace.Commands.Requests
 {
     class ObjectResponse<T> : DataspaceResponse where T : new()
     {

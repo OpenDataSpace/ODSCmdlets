@@ -26,7 +26,7 @@ namespace OpenDataSpace.Commands
 
         public const string SessionInfoVariableName = "_ODS_SESSION";
 
-        private RequestHandler RequestHandler
+        internal RequestHandler RequestHandler
         {
             get
             {
@@ -35,7 +35,8 @@ namespace OpenDataSpace.Commands
                     // No manual login, try to login with information in session state
                     if (!ReadSessionInfo())
                     {
-                        throw new RequestFailedException("No session information provided", "NoSessionInfo");
+                        var msg = "No session information provided. Did you forget to connect?";
+                        throw new RequestFailedException(msg, "NoSessionInfo");
                     }
                 }
                 return _requestHandler;

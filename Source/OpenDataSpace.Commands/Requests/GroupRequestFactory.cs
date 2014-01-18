@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OpenDataSpace.Commands.RequestData
+namespace OpenDataSpace.Commands.Requests
 {
     class GroupRequestFactory
     {
@@ -52,6 +52,7 @@ namespace OpenDataSpace.Commands.RequestData
         public static ObjectRequest CreateDeleteGroupRequest(long id)
         {
             var request = CreateBasic("Delete Group", Method.DELETE);
+            request.AddParameter("handler", _handler);
             request.SetData(new
             {
                 id = id

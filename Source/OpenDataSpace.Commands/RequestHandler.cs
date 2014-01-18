@@ -1,4 +1,4 @@
-﻿using OpenDataSpace.Commands.RequestData;
+﻿using OpenDataSpace.Commands.Requests;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -76,6 +76,12 @@ namespace OpenDataSpace.Commands
                 throw new RequestFailedException(message, "DataspaceRequestNotSuccessfull");
             }
             return response;
+        }
+
+        public T ExecuteAndUnpack<T>(ObjectRequest request) where T : new()
+        {
+            var response = SuccessfullyExecute<ObjectResponse<T>>(request);
+            return response.Data;
         }
 
         public string Login()

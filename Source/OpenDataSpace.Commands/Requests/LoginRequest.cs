@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 
-namespace OpenDataSpace.Commands.RequestData
+namespace OpenDataSpace.Commands.Requests
 {
     class LoginRequest : DataspaceRequest
     {

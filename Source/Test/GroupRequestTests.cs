@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using OpenDataSpace.Commands.Objects;
-using OpenDataSpace.Commands.RequestData;
+using OpenDataSpace.Commands.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 namespace Test
 {
     [TestFixture]
-    class RequestTests : TestBase
+    class GroupRequestTests : TestBase
     {
         private const string _testGroupName = "___testGroupName";
         private List<long> _newGroups = new List<long>();
@@ -28,6 +28,7 @@ namespace Test
         [TearDown]
         public void RemoveAddedGroups()
         {
+            //TODO: get the group with _testGroupName and remove it when found
             foreach (long id in _newGroups)
             {
                 var req = GroupRequestFactory.CreateDeleteGroupRequest(id);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OpenDataSpace.Commands.RequestData
+namespace OpenDataSpace.Commands.Requests
 {
     public abstract class DataspaceRequest
     {

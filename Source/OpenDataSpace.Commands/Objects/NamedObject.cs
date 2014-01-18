@@ -14,7 +14,7 @@ namespace OpenDataSpace.Commands.Objects
         [DeserializeAs(Name = "name", Attribute = true)]
         public string Name { get; set; }
 
-        public bool Equals(object other)
+        public override bool Equals(object other)
         {
             if (other is NamedObject)
             {

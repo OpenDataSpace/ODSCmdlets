@@ -40,16 +40,21 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="AddODSGroupCommand.cs" />
+    <Compile Include="GetODSGroupCommand.cs" />
     <Compile Include="Objects\NamedObject.cs" />
-    <Compile Include="RequestData\DataspaceRequest.cs" />
-    <Compile Include="RequestData\GroupRequestFactory.cs" />
-    <Compile Include="RequestData\LogoutRequest.cs" />
-    <Compile Include="RequestData\ObjectResponse.cs" />
-    <Compile Include="RequestData\ObjectRequest.cs" />
+    <Compile Include="ODSGroupCommandBase.cs" />
+    <Compile Include="ODSNouns.cs" />
+    <Compile Include="RemoveODSGroupCommand.cs" />
+    <Compile Include="Requests\DataspaceRequest.cs" />
+    <Compile Include="Requests\GroupRequestFactory.cs" />
+    <Compile Include="Requests\LogoutRequest.cs" />
+    <Compile Include="Requests\ObjectResponse.cs" />
+    <Compile Include="Requests\ObjectRequest.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="RequestFailedException.cs" />
     <Compile Include="ReportableException.cs" />
-    <Compile Include="RequestData\LoginResponse.cs" />
+    <Compile Include="Requests\LoginResponse.cs" />
     <Compile Include="Objects\SessionInformation.cs" />
     <Compile Include="ODSCmdlets.cs">
       <SubType>Component</SubType>
@@ -59,8 +64,8 @@
     <Compile Include="GetODSUserCommand.cs" />
     <Compile Include="DisconnectODSCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestData\LoginRequest.cs" />
-    <Compile Include="RequestData\DataspaceResponse.cs" />
+    <Compile Include="Requests\LoginRequest.cs" />
+    <Compile Include="Requests\DataspaceResponse.cs" />
     <Compile Include="RequestHandler.cs" />
     <Compile Include="ResourceUris.cs" />
   </ItemGroup>
