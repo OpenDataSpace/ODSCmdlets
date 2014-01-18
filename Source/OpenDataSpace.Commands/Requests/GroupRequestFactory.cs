@@ -28,8 +28,19 @@ namespace OpenDataSpace.Commands.Requests
 
         public static ObjectRequest CreateGetGroupsRequest(bool globalGroups)
         {
+            return CreateGetGroupsRequest("", globalGroups);
+        }
+
+        public static ObjectRequest CreateGetGroupsRequest(string query, bool globalGroups)
+        {
             var request = CreateNamedObjectRequest("Get Groups", Method.GET);
             request.AddParameter("provider", _provider);
+            request.AddParameter("query", query);
+            request.AddParameter("sort", new
+            {
+                property = "name",
+                direction = "ASC"
+            });
             request.AddParameter("parameters", new
             {
                 resultset = globalGroups ? "globalgroups" : "privategroups"
@@ -60,5 +71,25 @@ namespace OpenDataSpace.Commands.Requests
             request.ObjectId = id;
             return request;
         }
+
+
+        /*
+        * member management: add/delete
+        POST/DELETE
+        /groupmanagement/{groupname}
+        globalgroup=<bool>
+        ids=<id>
+        ids=<id>
+        */
+
+
+        /*
+         * get group members (object request)
+            provider=dataspacegroupmember
+            source=<groupname>
+            properties=id
+            properties=name
+            parameters	{"globalgroup":<bool>}
+         */
     }
 }

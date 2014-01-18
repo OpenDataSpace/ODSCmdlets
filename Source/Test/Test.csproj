@@ -40,7 +40,7 @@
     <Compile Include="ConnectCmdletsTests.cs" />
     <Compile Include="GroupCmdletsTests.cs" />
     <Compile Include="GroupRequestTests.cs" />
-    <Compile Include="RequestHandlerTests.cs" />
+    <Compile Include="ConnectRequestTests.cs" />
     <Compile Include="UserManagementTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestShellInterface.cs" />

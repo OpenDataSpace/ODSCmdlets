@@ -11,7 +11,10 @@ namespace Test
     [TestFixture]
     class GroupRequestTests : TestBase
     {
-        private const string _testGroupName = "___testGroupName";
+        private const string _testGroupPrefix = "__testGroup";
+        private const string _testGroupName = _testGroupPrefix + "Name1";
+        private const string _testGroupName2 = _testGroupPrefix + "Name2";
+
         private List<long> _newGroups = new List<long>();
 
         private ObjectResponse<NamedObject> DoAddGroup(string name, bool globalGroup)
@@ -76,6 +79,33 @@ namespace Test
             Assert.IsNotNull(response.Data);
             Assert.True(response.Data.Any());
             Assert.True(response.Data.Contains(addGroupResponse.Data), "GetGroups didn't get the test group");
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void RemoveGroup(bool globalGroup)
+        {
+            var req = GroupRequestFactory.CreateAddGroupRequest(_testGroupName, globalGroup);
+            var groupResponse = RequestHandler.Execute<ObjectResponse<NamedObject>>(req);
+            Assert.True(groupResponse.Success, "Group was not even added");
+            req = GroupRequestFactory.CreateDeleteGroupRequest(groupResponse.Data.Id);
+            var response = RequestHandler.Execute<DataspaceResponse>(req);
+            Assert.True(response.Success, response.Message);
+        }
+
+        [TestCase("", true, true, true)]
+        [TestCase("", false, true, true)]
+        [TestCase(GroupRequestTests._testGroupPrefix, false, true, true)]
+        [TestCase(GroupRequestTests._testGroupName, false, true, false)]
+        [TestCase("2", false, false, true)]
+        public void QueryGroups(string query, bool globalGroup, bool expectFirst, bool expectSecond)
+        {
+            var groupResponse1 = DoAddGroup(_testGroupName, globalGroup);
+            var groupResponse2 = DoAddGroup(_testGroupName2, globalGroup);
+            var request = GroupRequestFactory.CreateGetGroupsRequest(query, globalGroup);
+            var groups = RequestHandler.ExecuteAndUnpack<List<NamedObject>>(request);
+            Assert.AreEqual(expectFirst, groups.Contains(groupResponse1.Data));
+            Assert.AreEqual(expectSecond, groups.Contains(groupResponse2.Data));
         }
     }
 }

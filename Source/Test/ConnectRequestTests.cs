@@ -8,7 +8,7 @@ using System.Text;
 namespace Test
 {
     [TestFixture]
-    class RequestHandlerTests : TestBase
+    class ConnectRequestTests : TestBase
     {
 
         [Test]
