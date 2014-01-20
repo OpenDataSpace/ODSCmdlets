@@ -24,14 +24,14 @@ namespace OpenDataSpace.Commands
 
         protected override void ProcessRecord()
         {
-            try
+            // no name provided? empty string looks for everything
+            if (Name == null || Name.Length == 0)
             {
-                // no name provided? empty string looks for everything
-                if (Name == null || Name.Length == 0)
-                {
-                    Name = new string[] { "" };
-                }
-                foreach (var curName in Name)
+                Name = new string[] { "" };
+            }
+            foreach (var curName in Name)
+            {
+                try
                 {
                     var request = GroupRequestFactory.CreateGetGroupsRequest(curName, Scope.Equals(GroupScope.Global));
                     var groups = RequestHandler.ExecuteAndUnpack<List<NamedObject>>(request);
@@ -43,10 +43,10 @@ namespace OpenDataSpace.Commands
                         }
                     }
                 }
-            }
-            catch (ReportableException e)
-            {
-                WriteError(e.ErrorRecord);
+                catch (ReportableException e)
+                {
+                    WriteError(e.ErrorRecord);
+                }
             }
         }
     }

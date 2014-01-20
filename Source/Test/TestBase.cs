@@ -1,4 +1,5 @@
 using OpenDataSpace.Commands;
+using OpenDataSpace.Commands.Objects;
 // ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
 // Copyright (C) 2013  <name of author>
 //
@@ -50,6 +51,19 @@ namespace Test
         private LoginData _defaultLoginData;
         private TestShellInterface _shell;
         private RequestHandler _requestHandler;
+        private Random _random;
+
+        public Random Random
+        {
+            get
+            {
+                if (_random == null)
+                {
+                    _random = new Random();
+                }
+                return _random;
+            }
+        }
 
         public LoginData DefaultLoginData
         {
@@ -66,7 +80,7 @@ namespace Test
             }
         }
 
-        internal RequestHandler RequestHandler
+        public RequestHandler RequestHandler
         {
             get
             {
@@ -125,6 +139,21 @@ namespace Test
         internal string SingleQuote(string escapable)
         {
             return String.Format("'{0}'", escapable);
+        }
+
+        internal UpdatableUserObject GetRandomUserData()
+        {
+            var name = "testguy_" + Random.Next();
+            return new UpdatableUserObject()
+            {
+                UserName = name,
+                FamilyName = "family_" + Random.Next(),
+                GivenName = "given_" + Random.Next(),
+                EMail = name + "@testing.com",
+                Language = "en",
+                Role = "DataSpaceDefaultUser",
+                MaxSpace = Random.Next(10000)
+            };
         }
 
         // Private stuff

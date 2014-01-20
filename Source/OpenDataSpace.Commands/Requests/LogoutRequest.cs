@@ -15,10 +15,10 @@ namespace OpenDataSpace.Commands.Requests
             RequestName = "Logout";
         }
 
-        public override RestRequest CreateRestRequest(string sessionId)
+        public override RestRequest CreateRestRequest(AuthMethod authMethod, string sessionId)
         {
             var request = new RestRequest(ResourceUris.Logout, Method.POST);
-            request.AddParameter(SessionIdParameterName, sessionId);
+            SetAuthentication(request, authMethod, sessionId);
             return request;
         }
     }

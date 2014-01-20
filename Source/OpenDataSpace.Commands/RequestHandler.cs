@@ -8,41 +8,69 @@ using System.Text;
 
 namespace OpenDataSpace.Commands
 {
-    internal class RequestHandler
+    public class RequestHandler
     {
         private readonly IRestClient _client;
-
-        readonly string _username;
-        readonly SecureString _password;
-        string _sessionId;
+        private readonly string _username;
+        private readonly SecureString _password;
+        private string _sessionId;
+        private DataspaceRequest.AuthMethod _authMethod;
 
         public RequestHandler(string username, string password, string url)
-            : this(username, Utility.StringToSecureString(password), url)
+            : this(username, Utility.StringToSecureString(password), url, DataspaceRequest.AuthMethod.SessionId)
+        {
+        }
+
+        public RequestHandler(string username, string password, string url, DataspaceRequest.AuthMethod authMethod)
+            : this(username, Utility.StringToSecureString(password), url, authMethod)
         {
         }
 
         public RequestHandler(string username, SecureString password, string url)
+            : this(username, password, url, DataspaceRequest.AuthMethod.SessionId)
         {
-            _client = new RestClient(VildateURL(url));
+        }
+
+        public RequestHandler(string username, SecureString password, string url, DataspaceRequest.AuthMethod authMethod)
+        {
+            _client = new RestClient(ValidateURL(url));
             _username = username;
             _password = password;
+            _authMethod = authMethod;
         }
 
         public RequestHandler(string sessionId, string url)
+            : this(sessionId, url, DataspaceRequest.AuthMethod.SessionId)
         {
-            _client = new RestClient(VildateURL(url));
-            _sessionId = sessionId;
         }
 
-        public RequestHandler(IRestClient restClient)
+        public RequestHandler(string sessionId, string url, DataspaceRequest.AuthMethod authMethod)
         {
-            _client = restClient;
+            _client = new RestClient(ValidateURL(url));
+            _sessionId = sessionId;
+            _authMethod = authMethod;
         }
 
         public T Execute<T>(RestRequest request) where T : new()
         {
-            request.RequestFormat = DataFormat.Json;
-            IRestResponse<T> response = _client.Execute<T>(request);
+            IRestResponse<T> response;
+
+            // Explicitly check whether to execute as GET- or POST-like request
+            // RestSharp treats DELETE by default as a GET-like request, however we
+            // need it as a POST-like request
+            var method = Enum.GetName(typeof(Method), request.Method);
+            switch (request.Method)
+            {
+                case Method.POST:
+                case Method.PUT:
+                case Method.PATCH:
+                case Method.DELETE:
+                    response = _client.ExecuteAsPost<T>(request, method);
+                    break;
+                default:
+                    response = _client.ExecuteAsGet<T>(request, method);
+                    break;
+            }
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
@@ -50,12 +78,24 @@ namespace OpenDataSpace.Commands
                     response.ResponseStatus.ToString(), response.ErrorMessage);
                 throw new RequestFailedException(message, "RequestFailed", response.ErrorException);
             }
+            // if we identify with a cookie, update the sessionId
+            if (_authMethod == DataspaceRequest.AuthMethod.Cookie)
+            {
+                foreach (var cookie in response.Cookies)
+                {
+                    if (cookie.Name == DataspaceRequest.SessionIdCookieName)
+                    {
+                        _sessionId = cookie.Value;
+                        break;
+                    }
+                }
+            }
             return response.Data;
         }
 
         public T Execute<T>(DataspaceRequest request) where T : DataspaceResponse, new()
         {
-            var response = Execute<T>(request.CreateRestRequest(_sessionId));
+            var response = Execute<T>(request.CreateRestRequest(_authMethod, _sessionId));
             if (response == null)
             {
                 string message = String.Format("{0} request failed. Maybe the URL is incorrect?",
@@ -66,7 +106,7 @@ namespace OpenDataSpace.Commands
             return response;
         }
 
-        public T SuccessfullyExecute<T>(DataspaceRequest request) where T : DataspaceResponse, new()
+        public T ExecuteSuccessfully<T>(DataspaceRequest request) where T : DataspaceResponse, new()
         {
             var response = Execute<T>(request);
             if (!response.Success)
@@ -80,7 +120,7 @@ namespace OpenDataSpace.Commands
 
         public T ExecuteAndUnpack<T>(ObjectRequest request) where T : new()
         {
-            var response = SuccessfullyExecute<ObjectResponse<T>>(request);
+            var response = ExecuteSuccessfully<ObjectResponse<T>>(request);
             return response.Data;
         }
 
@@ -91,8 +131,12 @@ namespace OpenDataSpace.Commands
                 // TODO: throw exception
             }
             var request = new LoginRequest(_username, _password);
-            var response = SuccessfullyExecute<LoginResponse>(request);
-            _sessionId = response.SessionId;
+            var response = ExecuteSuccessfully<LoginResponse>(request);
+            if (_authMethod == DataspaceRequest.AuthMethod.SessionId)
+            {
+                _sessionId = response.SessionId;
+            }
+            // otherwise it's Cookie auth and set automatically!
             return _sessionId;
         }
 
@@ -103,7 +147,7 @@ namespace OpenDataSpace.Commands
             return response.Success;
         }
 
-        private string VildateURL(string url)
+        private string ValidateURL(string url)
         {
             // TODO: check first if protocol is already part of url
             return string.Format("https://{0}", url);
