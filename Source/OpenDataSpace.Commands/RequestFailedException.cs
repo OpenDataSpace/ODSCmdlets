@@ -6,14 +6,14 @@ using System.Text;
 
 namespace OpenDataSpace.Commands
 {
-    class ConnectionFailedException : ReportableException
+    class RequestFailedException : ReportableException
     {
-        public ConnectionFailedException(string message, string errorId)
+        public RequestFailedException(string message, string errorId)
             : this(message, errorId, null)
         {
         }
 
-        public ConnectionFailedException(string message, string errorId, Exception innerException)
+        public RequestFailedException(string message, string errorId, Exception innerException)
             : base(message, innerException, ErrorCategory.OpenError, errorId, null)
         {
         }

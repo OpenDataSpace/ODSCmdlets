@@ -1,3 +1,4 @@
+using OpenDataSpace.Commands;
 // ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
 // Copyright (C) 2013  <name of author>
 //
@@ -48,6 +49,7 @@ namespace Test
         private const string _defaultLoginDataFileName = "test_login.txt";
         private LoginData _defaultLoginData;
         private TestShellInterface _shell;
+        private RequestHandler _requestHandler;
 
         public LoginData DefaultLoginData
         {
@@ -61,6 +63,21 @@ namespace Test
                         Path.Combine(outDir, _defaultLoginDataFileName));
                 }
                 return _defaultLoginData;
+            }
+        }
+
+        internal RequestHandler RequestHandler
+        {
+            get
+            {
+                if (_requestHandler == null)
+                {
+                    LoginData login = DefaultLoginData;
+                    var requestHandler = new RequestHandler(login.UserName, login.Password, login.URL);
+                    requestHandler.Login();
+                    _requestHandler = requestHandler;
+                }
+                return _requestHandler;
             }
         }
 
@@ -84,6 +101,19 @@ namespace Test
         }
 
         // General helper stuff
+
+        internal string SimpleConnectCommand(LoginData login)
+        {
+            return String.Join(" ", new string[] {
+                CmdletName(typeof(ConnectODSCommand)),
+                "-Host",
+                SingleQuote(login.URL),
+                "-Username",
+                SingleQuote(login.UserName),
+                "-Password",
+                SingleQuote(login.Password)
+            });
+        }
 
         internal string CmdletName(Type type)
         {

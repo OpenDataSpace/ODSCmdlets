@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{61A6FF17-0E81-4EAE-B033-5298B756ECA0}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
+		..\Libraries\RestSharp\RestSharp.dll = ..\Libraries\RestSharp\RestSharp.dll
 	EndProjectSection
 EndProject
 Global

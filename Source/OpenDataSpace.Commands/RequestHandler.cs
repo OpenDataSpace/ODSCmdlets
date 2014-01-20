@@ -1,10 +1,8 @@
-﻿using OpenDataSpace.Commands.RequestData;
-using OpenDataSpace.RequestData.RequestData;
+﻿using OpenDataSpace.Commands.Requests;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
@@ -16,97 +14,99 @@ namespace OpenDataSpace.Commands
 
         readonly string _username;
         readonly SecureString _password;
-        readonly string _sessionId;
+        string _sessionId;
 
-        public RequestHandler(string username, string password, string hostname)
-            : this(username, ToSecureString(password), hostname)
+        public RequestHandler(string username, string password, string url)
+            : this(username, Utility.StringToSecureString(password), url)
         {
         }
 
-        public RequestHandler(string username, SecureString password, string hostname)
+        public RequestHandler(string username, SecureString password, string url)
         {
-            _client = new RestClient(UrlFromHostname(hostname));
+            _client = new RestClient(VildateURL(url));
             _username = username;
             _password = password;
         }
 
-        public RequestHandler(string sessionId, string hostname)
+        public RequestHandler(string sessionId, string url)
         {
-            _client = new RestClient(UrlFromHostname(hostname));
+            _client = new RestClient(VildateURL(url));
             _sessionId = sessionId;
         }
 
         public RequestHandler(IRestClient restClient)
-        {   
+        {
             _client = restClient;
         }
 
         public T Execute<T>(RestRequest request) where T : new()
         {
             request.RequestFormat = DataFormat.Json;
-            var response = _client.Execute<T>(request);
+            IRestResponse<T> response = _client.Execute<T>(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
                 string message = String.Format("Error retrieving response: {0}. {1}",
                     response.ResponseStatus.ToString(), response.ErrorMessage);
-                throw new ConnectionFailedException(message, "RequestFailed", response.ErrorException);
+                throw new RequestFailedException(message, "RequestFailed", response.ErrorException);
             }
             return response.Data;
         }
-        
-        public string Login()
+
+        public T Execute<T>(DataspaceRequest request) where T : DataspaceResponse, new()
         {
-            var request = new RestRequest(ResourceUris.Login, Method.POST);
-            request.RequestFormat = DataFormat.Json;
-            request.AddBody(new LoginRequest {
-                username = _username,
-                password = ToInsecureString(_password)
-            });
-            var response = Execute<LoginResponse>(request);
+            var response = Execute<T>(request.CreateRestRequest(_sessionId));
             if (response == null)
             {
-                throw new ConnectionFailedException("Login request failed. Maybe the URL is incorrect?",
+                string message = String.Format("{0} request failed. Maybe the URL is incorrect?",
+                    request.RequestName);
+                throw new RequestFailedException(message,
                     "ResponseDataIsNull");
             }
-            if (!response.success)
-            {
-                string message = String.Format("Login failed: {0}. Error Code: {1}",
-                    response.message, response.errorCode);
-                throw new ConnectionFailedException(message, "ODSLoginError");
-            }
-            return response.sessionId;
+            return response;
         }
 
-
-        internal static SecureString ToSecureString(string str)
+        public T SuccessfullyExecute<T>(DataspaceRequest request) where T : DataspaceResponse, new()
         {
-            var ss = new SecureString();
-            foreach (char c in str.ToCharArray())
+            var response = Execute<T>(request);
+            if (!response.Success)
             {
-                ss.AppendChar(c);
+                string message = String.Format("{0} failed: {1}. Error Code: {2}",
+                    request.RequestName, response.Message, response.ErrorCode);
+                throw new RequestFailedException(message, "DataspaceRequestNotSuccessfull");
             }
-            ss.MakeReadOnly();
-            return ss;
+            return response;
         }
 
-        private static string ToInsecureString(SecureString secureStr)
+        public T ExecuteAndUnpack<T>(ObjectRequest request) where T : new()
         {
-            var bstr = Marshal.SecureStringToBSTR(secureStr);
-            try
-            {
-                string str = Marshal.PtrToStringBSTR(bstr);
-                return str;
-            }
-            finally
-            {
-                Marshal.ZeroFreeBSTR(bstr);
-            }
+            var response = SuccessfullyExecute<ObjectResponse<T>>(request);
+            return response.Data;
         }
 
-        private string UrlFromHostname(string hostname)
+        public string Login()
         {
-            return string.Format("https://{0}", hostname);
+            if (String.IsNullOrEmpty(_username) || _password == null)
+            {
+                // TODO: throw exception
+            }
+            var request = new LoginRequest(_username, _password);
+            var response = SuccessfullyExecute<LoginResponse>(request);
+            _sessionId = response.SessionId;
+            return _sessionId;
+        }
+
+        public bool Logout()
+        {
+            var request = new LogoutRequest();
+            var response = Execute<DataspaceResponse>(request);
+            return response.Success;
+        }
+
+        private string VildateURL(string url)
+        {
+            // TODO: check first if protocol is already part of url
+            return string.Format("https://{0}", url);
         }
     }
 }

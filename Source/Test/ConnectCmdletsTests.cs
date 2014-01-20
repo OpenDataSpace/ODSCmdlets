@@ -24,19 +24,6 @@ namespace Test
     [TestFixture]
     public class ConnectionTests : TestBase
     {
-        private string SimpleConnectCommand(LoginData login)
-        {
-            return String.Join(" ", new string[] {
-                CmdletName(typeof(ConnectODSCommand)),
-                "-Host",
-                SingleQuote(login.URL),
-                "-Username",
-                SingleQuote(login.UserName),
-                "-Password",
-                SingleQuote(login.Password)
-            });
-        }
-
         [Test]
         public void ConnectODSSimpleAuth()
         {
@@ -44,9 +31,7 @@ namespace Test
             //make sure the session information object was created in the shell
             var session = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName) as SessionInformation;
             Assert.IsNotNull(session, "Session Information cannot be found in PS environment.");
-            //make sure we got all things to run a command without logging in again
-            Assert.IsNotNullOrEmpty(session.SessionId);
-            Assert.IsNotNullOrEmpty(session.URL);
+            Assert.True(session.IsValid(), "Invalid Session Information");
         }
 
         [Test]
@@ -69,9 +54,7 @@ namespace Test
             //make sure the session information object was created in the shell
             var session = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName) as SessionInformation;
             Assert.IsNotNull(session, "Session Information cannot be found in PS environment.");
-            //make sure we got all things to run a command without logging in again
-            Assert.IsNotNullOrEmpty(session.SessionId);
-            Assert.IsNotNullOrEmpty(session.URL);
+            Assert.True(session.IsValid(), "Invalid Session Information");
         }
 
         [Test]
@@ -86,7 +69,7 @@ namespace Test
             }
             catch (CmdletInvocationException exception)
             {
-                var realException = exception.InnerException as ConnectionFailedException;
+                var realException = exception.InnerException as RequestFailedException;
                 Assert.IsNotNull(realException, "Wrong exception thrown for failed login");
                 Assert.True(realException.Message.Contains("Error Code: 2"),
                     String.Format("Wrong error for failed login: {0}", realException.Message));
@@ -100,16 +83,20 @@ namespace Test
                 SimpleConnectCommand(DefaultLoginData),
                 CmdletName(typeof(DisconnectODSCommand))
             };
-            Shell.Execute(commands);
+            var res = Shell.Execute(commands);
             var sessionInfo = Shell.GetVariableValue(ODSCommandBase.SessionInfoVariableName);
-            Assert.IsNull(sessionInfo);
+            Assert.IsNull(sessionInfo, "Session info was not deleted");
+            Assert.Greater(res.Count, 0, "No return value");
+            Assert.AreEqual(true, res[0], "Logout unsuccessful");
         }
 
         [Test]
         public void DisconnectWorksAlways()
         {
-            // disconnect without connecting doesnÄt result in an exception
-            Shell.Execute(CmdletName(typeof(DisconnectODSCommand)));
+            // disconnect without connecting doesn't result in an exception
+            var res = Shell.Execute(CmdletName(typeof(DisconnectODSCommand)));
+            Assert.Greater(res.Count, 0, "No return value");
+            Assert.AreEqual(false, res[0]);
         }
     }
 }

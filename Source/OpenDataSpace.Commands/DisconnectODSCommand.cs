@@ -18,16 +18,12 @@ using System.Management.Automation;
 
 namespace OpenDataSpace.Commands
 {
-    [Cmdlet(VerbsCommunications.Disconnect, "ODS")]
+    [Cmdlet(VerbsCommunications.Disconnect, ODSNouns.ODS)]
     public class DisconnectODSCommand : ODSCommandBase
     {
-        public DisconnectODSCommand()
-        {
-        }
-
         protected override void BeginProcessing()
         {
-            Disconnect();
+            WriteObject(Disconnect());
         }
     }
 }

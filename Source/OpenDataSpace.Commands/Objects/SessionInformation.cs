@@ -9,20 +9,24 @@ namespace OpenDataSpace.Commands
     {
         public string URL { get; set; }
         public string SessionId { get; set; }
+        public string UserName { get; set; }
 
         public SessionInformation()
         {
         }
 
-        public SessionInformation(string sessionId, string url)
+        public SessionInformation(string sessionId, string url, string username)
         {
             URL = url;
             SessionId = sessionId;
+            UserName = username;
         }
 
         public bool IsValid()
         {
-            return !String.IsNullOrEmpty(URL) && !String.IsNullOrEmpty(SessionId);
+            return !String.IsNullOrEmpty(URL) &&
+                   !String.IsNullOrEmpty(SessionId) &&
+                   !String.IsNullOrEmpty(UserName);
         }
     }
 }

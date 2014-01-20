@@ -1,3 +1,4 @@
+using OpenDataSpace.Commands.Objects;
 // ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
 // Copyright (C) 2013  <name of author>
 //
@@ -25,19 +26,18 @@ namespace OpenDataSpace.Commands
 
         public const string SessionInfoVariableName = "_ODS_SESSION";
 
-        private RequestHandler RequestHandler
+        internal RequestHandler RequestHandler
         {
             get
             {
                 if (_requestHandler == null)
                 {
                     // No manual login, try to login with information in session state
-                    var cInfo = SessionState.PSVariable.GetValue(SessionInfoVariableName, null) as SessionInformation;
-                    if (cInfo == null || !cInfo.IsValid())
+                    if (!ReadSessionInfo())
                     {
-                        throw new ConnectionFailedException("No session information provided", "NoSessionInfo");
+                        var msg = "No session information provided. Did you forget to connect?";
+                        throw new RequestFailedException(msg, "NoSessionInfo");
                     }
-                    _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.URL);
                 }
                 return _requestHandler;
             }
@@ -50,22 +50,38 @@ namespace OpenDataSpace.Commands
 
         public void Connect(string username, string password, string url)
         {
-            Connect(username, RequestHandler.ToSecureString(password), url);
+            Connect(username, Utility.StringToSecureString(password), url);
         }         
 
         public void Connect(string username, SecureString password, string url)
         {
             _requestHandler = new RequestHandler(username, password, url);
             string sId = _requestHandler.Login();
-            var cInfo = new SessionInformation(sId, url);
+            var cInfo = new SessionInformation(sId, url, username);
             SessionState.PSVariable.Set(SessionInfoVariableName, cInfo);
         }
 
-        public void Disconnect()
+        public bool Disconnect()
         {
+            if (!ReadSessionInfo())
+            {
+                return false;
+            }
+            bool ret = RequestHandler.Logout();
             SessionState.PSVariable.Remove(SessionInfoVariableName);
+            return ret;
         }
 
+        private bool ReadSessionInfo()
+        {
+            var cInfo = SessionState.PSVariable.GetValue(SessionInfoVariableName, null) as SessionInformation;
+            if (cInfo == null || !cInfo.IsValid())
+            {
+                return false;
+            }
+            _requestHandler = new RequestHandler(cInfo.SessionId, cInfo.URL);
+            return true;
+        }
     }
 }
 

@@ -18,7 +18,7 @@ using System.Management.Automation;
 
 namespace OpenDataSpace.Commands
 {
-    [Cmdlet(VerbsCommunications.Connect, "ODS", DefaultParameterSetName="CredAuth")]
+    [Cmdlet(VerbsCommunications.Connect, ODSNouns.ODS, DefaultParameterSetName="CredAuth")]
     public class ConnectODSCommand : ODSCommandBase
     {
         [Alias("Host", "h")]
@@ -37,10 +37,6 @@ namespace OpenDataSpace.Commands
         [Alias("p")]
         [Parameter(Position = 2, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = "SimpleAuth")]
         public string Password { get; set; }
-
-        public ConnectODSCommand()
-        {
-        }
 
         protected override void ProcessRecord()
         {

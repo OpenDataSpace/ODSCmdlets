@@ -37,15 +37,22 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="RequestHandlerTests.cs" />
-    <Compile Include="ConnectionTests.cs" />
+    <Compile Include="ConnectCmdletsTests.cs" />
+    <Compile Include="GroupCmdletsTests.cs" />
+    <Compile Include="GroupRequestTests.cs" />
+    <Compile Include="ConnectRequestTests.cs" />
     <Compile Include="UserManagementTests.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestShellInterface.cs" />
+    <Compile Include="UtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Tools\NUnit-2.6.3\bin\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\RestSharp\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
