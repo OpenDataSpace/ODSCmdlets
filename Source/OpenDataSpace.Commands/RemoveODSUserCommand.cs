@@ -7,9 +7,8 @@ using System.Text;
 
 namespace OpenDataSpace.Commands
 {
-
-    [Cmdlet(VerbsCommon.Remove, ODSNouns.Group, SupportsShouldProcess = true)]
-    public class RemoveODSGroupCommand : ODSGroupCommandBase
+    [Cmdlet(VerbsCommon.Remove, ODSNouns.User, SupportsShouldProcess = true)]
+    public class RemoveODSUserCommand : ODSGroupCommandBase
     {
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         public long[] Id { get; set; }
@@ -20,7 +19,7 @@ namespace OpenDataSpace.Commands
             {
                 try
                 {
-                    var request = GroupRequestFactory.CreateDeleteGroupRequest(curId);
+                    var request = UserRequestFactory.CreateDeleteUserRequest(curId);
                     if (ShouldProcess(curId.ToString()))
                     {
                         RequestHandler.ExecuteSuccessfully<DataspaceResponse>(request);
@@ -32,6 +31,5 @@ namespace OpenDataSpace.Commands
                 }
             }
         }
-
     }
 }

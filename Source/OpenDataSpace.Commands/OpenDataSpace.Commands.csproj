@@ -41,16 +41,22 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AddODSGroupCommand.cs" />
+    <Compile Include="AddODSUserCommand.cs" />
     <Compile Include="GetODSGroupCommand.cs" />
     <Compile Include="Objects\NamedObject.cs" />
+    <Compile Include="Objects\UpdatableUserObject.cs" />
+    <Compile Include="Objects\UserObject.cs" />
     <Compile Include="ODSGroupCommandBase.cs" />
     <Compile Include="ODSNouns.cs" />
     <Compile Include="RemoveODSGroupCommand.cs" />
+    <Compile Include="RemoveODSUserCommand.cs" />
     <Compile Include="Requests\DataspaceRequest.cs" />
     <Compile Include="Requests\GroupRequestFactory.cs" />
     <Compile Include="Requests\LogoutRequest.cs" />
     <Compile Include="Requests\ObjectResponse.cs" />
     <Compile Include="Requests\ObjectRequest.cs" />
+    <Compile Include="Requests\UserRequestFactory.cs" />
+    <Compile Include="SetODSUserCommand.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="RequestFailedException.cs" />
     <Compile Include="ReportableException.cs" />

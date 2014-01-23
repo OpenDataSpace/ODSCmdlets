@@ -6,23 +6,15 @@ using System.Text;
 
 namespace OpenDataSpace.Commands.Requests
 {
-    class GroupRequestFactory
+    public static class GroupRequestFactory
     {
         private const string _handler = "dataspacegroup";
         private const string _provider = "dataspacedirectoryobjects";
 
-        private static ObjectRequest CreateBasic(string requestName, Method method)
-        {
-            var request = new ObjectRequest(method);
-            request.RequestName = requestName;
-            return request;
-        }
-
         private static ObjectRequest CreateNamedObjectRequest(string requestName, Method method)
         {
-            var request = CreateBasic(requestName, method);
-            request.AskForProperty("name");
-            request.AskForProperty("id");
+            var request = new ObjectRequest(requestName, method);
+            request.AskForProperties("name", "id");
             return request;
         }
 
@@ -51,23 +43,23 @@ namespace OpenDataSpace.Commands.Requests
         public static ObjectRequest CreateAddGroupRequest(string groupName, bool globalGroup)
         {
             var request = CreateNamedObjectRequest("Add Group", Method.POST);
-            request.SetData(new
+            request.Data = new
             {
                 name = groupName,
                 globalgroup = globalGroup
-            });
+            };
             request.AddParameter("handler", _handler);
             return request;
         }
 
         public static ObjectRequest CreateDeleteGroupRequest(long id)
         {
-            var request = CreateBasic("Delete Group", Method.DELETE);
+            var request = new ObjectRequest("Delete Group", Method.DELETE);
             request.AddParameter("handler", _handler);
-            request.SetData(new
+            request.Data = new
             {
                 id = id
-            });
+            };
             request.ObjectId = id;
             return request;
         }

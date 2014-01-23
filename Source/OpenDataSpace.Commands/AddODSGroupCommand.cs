@@ -11,7 +11,7 @@ namespace OpenDataSpace.Commands
     [Cmdlet(VerbsCommon.Add, ODSNouns.Group, SupportsShouldProcess = true)]
     public class AddODSGroupCommand : ODSGroupCommandBase
     {
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true,  ValueFromPipelineByPropertyName = true)]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
         public string[] Name { get; set; }
 
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true)]
@@ -19,9 +19,9 @@ namespace OpenDataSpace.Commands
 
         protected override void ProcessRecord()
         {
-            try
+            foreach (var curName in Name)
             {
-                foreach (var curName in Name)
+                try
                 {
                     var request = GroupRequestFactory.CreateAddGroupRequest(curName, Scope.Equals(GroupScope.Global));
                     // TODO: check use of ShouldProcess
@@ -31,11 +31,12 @@ namespace OpenDataSpace.Commands
                         WriteObject(data);
                     }
                 }
+                catch (ReportableException e)
+                {
+                    WriteError(e.ErrorRecord);
+                }
             }
-            catch (ReportableException e)
-            {
-                WriteError(e.ErrorRecord);
-            }
+
         }
     }
 }

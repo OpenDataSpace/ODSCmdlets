@@ -35,5 +35,6 @@ namespace Test
             var requestHandler = new RequestHandler(login.UserName, login.Password, login.URL);
             Assert.False(requestHandler.Logout());
         }
+
     }
 }

@@ -19,9 +19,9 @@ namespace OpenDataSpace.Commands.Requests
             _password = password;
         }
 
-        public override RestRequest CreateRestRequest(string sessionId)
+        public override RestRequest CreateRestRequest(AuthMethod authMethod, string sessionId)
         {
-            // sessionId is useless, we're not logged in anyway!
+            // authMethod and sessionId are useless, we're not logged in anyway!
             var request = new RestRequest(ResourceUris.Login, Method.POST);
             request.RequestFormat = DataFormat.Json;
             request.AddBody(new {

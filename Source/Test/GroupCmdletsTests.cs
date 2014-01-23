@@ -25,7 +25,7 @@ namespace Test
 
         private void DoRemoveGroup(long id)
         {
-            RequestHandler.SuccessfullyExecute<DataspaceResponse>(GroupRequestFactory.CreateDeleteGroupRequest(id));
+            RequestHandler.ExecuteSuccessfully<DataspaceResponse>(GroupRequestFactory.CreateDeleteGroupRequest(id));
         }
 
         [TearDown]

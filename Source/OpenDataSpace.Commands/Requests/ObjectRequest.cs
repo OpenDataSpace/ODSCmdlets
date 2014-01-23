@@ -7,24 +7,36 @@ using System.Text;
 
 namespace OpenDataSpace.Commands.Requests
 {
-    class ObjectRequest : DataspaceRequest
+    public class ObjectRequest : DataspaceRequest
     {
         private Method _method;
         private List<KeyValuePair<string, object>> _parameters;
 
         public long ObjectId { get; set; }
+        public object Data { get; set; }
+        public object Body { get; set; }
 
-        public ObjectRequest( Method method)
+        public ObjectRequest(Method method)
+            : this("Object", method)
         {
-            RequestName = "Object";
+        }
+
+        public ObjectRequest(string requestName, Method method)
+        {
+            RequestName = requestName;
             _method = method;
             _parameters = new List<KeyValuePair<string, object>>();
         }
 
-        public override RestRequest CreateRestRequest(string sessionId)
+        public override RestRequest CreateRestRequest(AuthMethod authMethod, string sessionId)
         {
             var request = new RestRequest(BuildUri(), _method);
-            request.AddParameter(SessionIdParameterName, sessionId);
+            request.RequestFormat = DataFormat.Json;
+            SetAuthentication(request, authMethod, sessionId);
+            if (Data != null)
+            {
+                AddParameter("data", Data); // will be handled by upcoming loop
+            }
             foreach (var param in _parameters)
             {
                 if (param.Value is string)
@@ -41,6 +53,10 @@ namespace OpenDataSpace.Commands.Requests
                     request.AddParameter(param.Key, serialized);
                 }
             }
+            if (Body != null)
+            {
+                request.AddBody(Body);
+            }
             return request;
         }
 
@@ -49,14 +65,12 @@ namespace OpenDataSpace.Commands.Requests
             _parameters.Add(new KeyValuePair<string, object>(name, value));
         }
 
-        public void AskForProperty(string name)
+        public void AskForProperties(params string[] names)
         {
-            AddParameter("properties", name);
-        }
-
-        public void SetData(object data)
-        {
-            AddParameter("data", data);
+            foreach (var name in names)
+            {
+                AddParameter("properties", name);
+            }
         }
 
         private string BuildUri()
