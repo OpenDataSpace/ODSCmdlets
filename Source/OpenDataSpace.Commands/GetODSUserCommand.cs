@@ -1,7 +1,7 @@
-using OpenDataSpace.Commands.Objects;
-using OpenDataSpace.Commands.Requests;
 // ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
-// Copyright (C) 2013  <name of author>
+// Copyright (C) GRAU DATA 2013-2014
+//
+// Author(s): Stefan Burnicki <stefan.burnicki@graudata.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,9 @@ using OpenDataSpace.Commands.Requests;
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using OpenDataSpace.Commands.Objects;
+using OpenDataSpace.Commands.Requests;
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;
