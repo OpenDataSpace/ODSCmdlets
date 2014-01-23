@@ -62,9 +62,7 @@
     <Compile Include="ReportableException.cs" />
     <Compile Include="Requests\LoginResponse.cs" />
     <Compile Include="Objects\SessionInformation.cs" />
-    <Compile Include="ODSCmdlets.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="ODSCmdlets.cs" />
     <Compile Include="ODSCommandBase.cs" />
     <Compile Include="ConnectODSCommand.cs" />
     <Compile Include="GetODSUserCommand.cs" />
