@@ -27,39 +27,23 @@ using System.Text;
 namespace Test
 {
     [TestFixture]
-    class GroupRequestTests : TestBase
+    class GroupRequestTests : GroupTestBase
     {
         private const string _testGroupPrefix = "__testGroup";
         private const string _testGroupName = _testGroupPrefix + "Name1";
         private const string _testGroupName2 = _testGroupPrefix + "Name2";
 
-        private List<long> _newGroups = new List<long>();
-
-        private ObjectResponse<NamedObject> DoAddGroup(string name, bool globalGroup)
-        {
-            var req = GroupRequestFactory.CreateAddGroupRequest(name, globalGroup);
-            var response = RequestHandler.ExecuteSuccessfully<ObjectResponse<NamedObject>>(req);
-            _newGroups.Add(response.Data.Id); //for cleanup
-            return response;
-        }
-
         [TearDown]
         public void RemoveAddedGroups()
         {
-            //TODO: get the group with _testGroupName and remove it when found instead of using _newGroups
-            foreach (long id in _newGroups)
-            {
-                var req = GroupRequestFactory.CreateDeleteGroupRequest(id);
-                RequestHandler.ExecuteSuccessfully<DataspaceResponse>(req);
-            }
-            _newGroups.Clear();
+            DoRemoveAddedGroups();
         }
 
         [TestCase(true)]
         [TestCase(false)]
         public void AddGroup(bool globalGroup)
         {
-            var response = DoAddGroup(_testGroupName, globalGroup);
+            var response = DoAddGroup(_testGroupName, globalGroup, true);
             Assert.IsTrue(response.Success, response.Message);
             Assert.AreEqual(_testGroupName, response.Data.Name, "Name differs");
             Assert.Greater(response.Data.Id, 0, "Id is invalid");
@@ -71,10 +55,10 @@ namespace Test
         //[TestCase(false, false, false)]
         public void AddGroupTwice(bool firstGlobal, bool secondGlobal, bool shouldWork)
         {
-            var firstResponse = DoAddGroup(_testGroupName, firstGlobal);
+            var firstResponse = DoAddGroup(_testGroupName, firstGlobal, true);
             //first request should always work
             Assert.IsTrue(firstResponse.Success);
-            var secondResponse = DoAddGroup(_testGroupName, secondGlobal);
+            var secondResponse = DoAddGroup(_testGroupName, secondGlobal, true);
             Assert.AreEqual(shouldWork,  secondResponse.Success, "Adding group twice works different than intended!");
             if (secondResponse.Success)
             {
@@ -88,7 +72,7 @@ namespace Test
         public void GroupsAreAddedCorrectly(bool globalGroup)
         {
             // add a group first to make sure we have one. adding is tested in another test
-            var addGroupResponse = DoAddGroup(_testGroupName, globalGroup);
+            var addGroupResponse = DoAddGroup(_testGroupName, globalGroup, true);
             var req = GroupRequestFactory.CreateGetGroupsRequest(globalGroup);
             var response = RequestHandler.ExecuteSuccessfully<ObjectResponse<List<NamedObject>>>(req);
             Assert.IsNotNull(response.Data);
@@ -115,8 +99,8 @@ namespace Test
         [TestCase("Name2", false, false, true)]
         public void QueryGroups(string query, bool globalGroup, bool expectFirst, bool expectSecond)
         {
-            var groupResponse1 = DoAddGroup(_testGroupName, globalGroup);
-            var groupResponse2 = DoAddGroup(_testGroupName2, globalGroup);
+            var groupResponse1 = DoAddGroup(_testGroupName, globalGroup, true);
+            var groupResponse2 = DoAddGroup(_testGroupName2, globalGroup, true);
             var request = GroupRequestFactory.CreateGetGroupsRequest(query, globalGroup);
             var groups = RequestHandler.ExecuteAndUnpack<List<NamedObject>>(request);
             Assert.AreEqual(expectFirst, groups.Contains(groupResponse1.Data));

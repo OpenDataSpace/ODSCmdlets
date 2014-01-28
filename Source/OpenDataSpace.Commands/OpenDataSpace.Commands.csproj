@@ -41,16 +41,21 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AddODSGroupCommand.cs" />
+    <Compile Include="AddODSGroupMemberCommand.cs" />
     <Compile Include="AddODSUserCommand.cs" />
     <Compile Include="GetODSGroupCommand.cs" />
+    <Compile Include="GetODSGroupMemberCommand.cs" />
     <Compile Include="Objects\NamedObject.cs" />
     <Compile Include="Objects\UpdatableUserObject.cs" />
     <Compile Include="Objects\UserObject.cs" />
     <Compile Include="ODSGroupCommandBase.cs" />
     <Compile Include="ODSNouns.cs" />
     <Compile Include="RemoveODSGroupCommand.cs" />
+    <Compile Include="RemoveODSGroupMemberCommand.cs" />
     <Compile Include="RemoveODSUserCommand.cs" />
     <Compile Include="Requests\DataspaceRequest.cs" />
+    <Compile Include="Requests\GroupManagementRequest.cs" />
+    <Compile Include="Requests\GroupMemberRequestFactory.cs" />
     <Compile Include="Requests\GroupRequestFactory.cs" />
     <Compile Include="Requests\LogoutRequest.cs" />
     <Compile Include="Requests\ObjectResponse.cs" />
@@ -62,7 +67,9 @@
     <Compile Include="ReportableException.cs" />
     <Compile Include="Requests\LoginResponse.cs" />
     <Compile Include="Objects\SessionInformation.cs" />
-    <Compile Include="ODSCmdlets.cs" />
+    <Compile Include="ODSCmdlets.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ODSCommandBase.cs" />
     <Compile Include="ConnectODSCommand.cs" />
     <Compile Include="GetODSUserCommand.cs" />
@@ -88,8 +95,4 @@
       <HintPath>..\..\..\..\..\..\..\Program Files\Reference Assemblies\Microsoft\WindowsPowerShell\v1.0\System.Management.Automation.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
-  <PropertyGroup>
-    <PostBuildEvent>"C:\Windows\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exe" $(TargetPath)</PostBuildEvent>
-  </PropertyGroup>
 </Project>

@@ -41,7 +41,7 @@ namespace OpenDataSpace.Commands
                     var request = GroupRequestFactory.CreateDeleteGroupRequest(curId);
                     if (ShouldProcess(curId.ToString()))
                     {
-                        RequestHandler.ExecuteSuccessfully<DataspaceResponse>(request);
+                        RequestHandler.ExecuteSuccessfully(request);
                     }
                 }
                 catch (ReportableException e)

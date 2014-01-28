@@ -30,6 +30,7 @@ namespace OpenDataSpace.Commands
     public class AddODSUserCommand : ODSGroupCommandBase
     {
 
+        [Alias("Name")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true)]
         public string UserName { get; set; }
 

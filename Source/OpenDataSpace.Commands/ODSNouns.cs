@@ -28,5 +28,6 @@ namespace OpenDataSpace.Commands
         public const string User = "ODSUser";
         public const string Group = "ODSGroup";
         public const string ODS = "ODS";
+        public const string GroupMember = "ODSGroupMember";
     }
 }

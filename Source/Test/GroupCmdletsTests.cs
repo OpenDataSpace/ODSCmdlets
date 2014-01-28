@@ -29,32 +29,15 @@ using System.Management.Automation;
 namespace Test
 {
     [TestFixture]
-    class GroupCmdletsTests : TestBase
+    class GroupCmdletsTests : GroupTestBase
     {
         private const string _testGroupName = "__testGroup";
         private const string _testGroupName2 = "__testGroup2";
 
-        private List<long> _removeGroups = new List<long>();
-
-        private NamedObject DoAddGroup(string name, bool globalGroup)
-        {
-            return RequestHandler.ExecuteAndUnpack<NamedObject>(GroupRequestFactory.CreateAddGroupRequest(name, globalGroup));
-        }
-
-        private void DoRemoveGroup(long id)
-        {
-            RequestHandler.ExecuteSuccessfully<DataspaceResponse>(GroupRequestFactory.CreateDeleteGroupRequest(id));
-        }
-
         [TearDown]
         public void RemoveAddedGroups()
         {
-            //TODO: get the group with _testGroupName(2) and remove it when found instead of using _removeGroups
-            foreach (var id in _removeGroups)
-            {
-                DoRemoveGroup(id);
-            }
-            _removeGroups.Clear();
+            DoRemoveAddedGroups();
         }
 
         [TestCase(true)]
@@ -77,7 +60,7 @@ namespace Test
             var groupData = group[0] as NamedObject;
             Assert.IsNotNull(groupData, "Returned object is no NamedObject");
             Assert.Greater(groupData.Id, 0, "Group ID is invalid");
-            _removeGroups.Add(groupData.Id);
+            AutoRemoveGroup(groupData.Id);
             Assert.IsNotNullOrEmpty(groupData.Name);
             // TODO: get group(s) and check for scope
         }
@@ -97,21 +80,21 @@ namespace Test
             };
             var groups = Shell.Execute(commands);
             Assert.AreEqual(2, groups.Count, "Not all groups were added!");
-            _removeGroups.Add(((NamedObject)groups[0]).Id);
-            _removeGroups.Add(((NamedObject)groups[1]).Id);
+            AutoRemoveGroup(((NamedObject)groups[0]).Id);
+            AutoRemoveGroup(((NamedObject)groups[1]).Id);
         }
 
         [TestCase(false)]
         [TestCase(true)]
         public void RemoveGroupCmdlet(bool globalGroup)
         {
-            var group = DoAddGroup(_testGroupName, globalGroup);
+            var response = DoAddGroup(_testGroupName, globalGroup, false);
             string[] commands = new string[] {
                 SimpleConnectCommand(DefaultLoginData),
                 String.Join(" ", new string[] {
                     CmdletName(typeof(RemoveODSGroupCommand)),
                     "-Id",
-                    group.Id.ToString()
+                    response.Data.Id.ToString()
                 })
             };
             Shell.Execute(commands); //throws eception on error, no assert necessary
@@ -120,8 +103,8 @@ namespace Test
         [Test]
         public void RemoveGroupCmdletViaPipelineId()
         {
-            var group1 = DoAddGroup(_testGroupName, false);
-            var group2 = DoAddGroup(_testGroupName2, false);
+            var group1 = DoAddGroup(_testGroupName, false, false).Data;
+            var group2 = DoAddGroup(_testGroupName2, false, false).Data;
             string[] commands = new string[] {
                 SimpleConnectCommand(DefaultLoginData),
                 String.Join(" ", new string[] {
@@ -153,8 +136,7 @@ namespace Test
         [TestCase(false)]
         public void GetGroupCmdlet(bool globalGroup)
         {
-            var group = DoAddGroup(_testGroupName, globalGroup);
-            _removeGroups.Add(group.Id);
+            var group = DoAddGroup(_testGroupName, globalGroup, true).Data;
             string[] commands = new string[] {
                 SimpleConnectCommand(DefaultLoginData),
                 String.Join(" ", new string[] {
@@ -179,10 +161,8 @@ namespace Test
         [TestCase(true, "up2", false, false)] // with "excat" this should return a group
         public void GetGroupCmdletQuery(bool exact, string query, bool expectFirst, bool expectSecond)
         {
-            var firstGroup = DoAddGroup(_testGroupName, false);
-            _removeGroups.Add(firstGroup.Id);
-            var secondGroup = DoAddGroup(_testGroupName2, false);
-            _removeGroups.Add(secondGroup.Id);
+            var firstGroup = DoAddGroup(_testGroupName, false, true).Data;
+            var secondGroup = DoAddGroup(_testGroupName2, false, true).Data;
             string[] commands = new string[] {
                 SimpleConnectCommand(DefaultLoginData),
                 String.Join(" ", new string[] {

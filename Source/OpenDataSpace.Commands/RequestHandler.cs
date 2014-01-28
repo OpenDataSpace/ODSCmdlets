@@ -112,6 +112,12 @@ namespace OpenDataSpace.Commands
             return response.Data;
         }
 
+        public bool Execute(DataspaceRequest request)
+        {
+            var response = Execute<DataspaceResponse>(request);
+            return response.Success;
+        }
+
         public T Execute<T>(DataspaceRequest request) where T : DataspaceResponse, new()
         {
             var response = Execute<T>(request.CreateRestRequest(_authMethod, _sessionId));
@@ -123,6 +129,11 @@ namespace OpenDataSpace.Commands
                     "ResponseDataIsNull");
             }
             return response;
+        }
+
+        public void ExecuteSuccessfully(DataspaceRequest request)
+        {
+            ExecuteSuccessfully<DataspaceResponse>(request);
         }
 
         public T ExecuteSuccessfully<T>(DataspaceRequest request) where T : DataspaceResponse, new()

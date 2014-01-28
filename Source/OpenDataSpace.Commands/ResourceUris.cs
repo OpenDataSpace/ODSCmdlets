@@ -28,5 +28,6 @@ namespace OpenDataSpace.Commands
         public const string Login = "/session/login";
         public const string Logout = "/session/logout";
         public const string Object = "/object";
+        public const string GroupManagement = "/dataspace/groupmanagement";
     }
 }

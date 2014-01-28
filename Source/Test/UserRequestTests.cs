@@ -31,13 +31,6 @@ namespace Test
     {
         // TODO: better cleanup for added users!
 
-        private UserObject GetAbritraryUser()
-        {
-            var listRequest = UserRequestFactory.CreateQueryUserRequest(0, 1, "", "", "", "");
-            var list = RequestHandler.ExecuteAndUnpack<List<UserObject>>(listRequest);
-            return list[0];
-        }
-
         private void RemoveUser(long id)
         {
             var request = UserRequestFactory.CreateDeleteUserRequest(id);

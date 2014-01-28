@@ -82,24 +82,5 @@ namespace OpenDataSpace.Commands.Requests
             return request;
         }
 
-
-        /*
-        * member management: add/delete
-        POST/DELETE
-        /groupmanagement/{groupname}
-        globalgroup=<bool>
-        ids=<id>
-        ids=<id>
-        */
-
-
-        /*
-         * get group members (object request)
-            provider=dataspacegroupmember
-            source=<groupname>
-            properties=id
-            properties=name
-            parameters	{"globalgroup":<bool>}
-         */
     }
 }

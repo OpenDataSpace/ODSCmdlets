@@ -32,7 +32,7 @@ namespace Test
         {
             _runspace = RunspaceFactory.CreateRunspace();
             _runspace.Open();
-            LoadODSCmdletSnapin();
+            LoadODSCmdletBinary();
         }
 
         public Collection<object> Execute(string command)
@@ -79,28 +79,29 @@ namespace Test
             return _runspace.SessionStateProxy.GetVariable(variableName);
         }
 
-        private void LoadODSCmdletSnapin()
+        private void LoadODSCmdletBinary()
         {
             bool isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT;
-            if (isWindows) //we are likely to run Powershell, not Pash, so let's install the Snapin first
+            string path = new Uri(typeof(ODSCmdlets).Assembly.CodeBase).LocalPath;
+            if (isWindows) //we are likely to run Powershell 2.0 or higher, let's import it as a module
             {
-                var snapin = new ODSCmdlets();
                 try
                 {
-                    Execute(String.Format("Add-PSSnapin {0}", snapin.Name));
+                    Execute(String.Format("Import-Module {0}", path));
                 }
                 catch (MethodInvocationException e)
                 {
                     throw new RuntimeException(String.Format(
-                        "Failed to load PSSnapin '{0}'. Did you install it?", snapin.Name),
+                        "Failed to import module '{0}'. Didn't you build it?", path),
                         e
                     );
                 }                                            
             }
-            else //Pash can load Snapins directly, no need to install it
+            else
             {
-                string path = new Uri(typeof(ODSCmdlets).Assembly.CodeBase).LocalPath;
-                Execute(String.Format("Add-PSSnapIn '{0}'", path));
+                //Pash can load it as a PSSnapIn, even without installation
+                throw new NotSupportedException("Non-Windows platforms are not yet supported!");
+                //Execute(String.Format("Add-PSSnapIn '{0}'", path));
             }
         }
     }

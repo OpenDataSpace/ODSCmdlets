@@ -19,7 +19,9 @@
 
 using OpenDataSpace.Commands;
 using OpenDataSpace.Commands.Objects;
+using OpenDataSpace.Commands.Requests;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 using System.Net;
@@ -158,6 +160,15 @@ namespace Test
                 Role = "DataSpaceDefaultUser",
                 MaxSpace = Random.Next(10000)
             };
+        }
+
+        // TODO: using an arbitrary user is a workaround, because we can't delete and
+        // therefore not add a user with known properties
+        internal UserObject GetAbritraryUser()
+        {
+            var listRequest = UserRequestFactory.CreateQueryUserRequest(0, 1, "", "", "", "");
+            var list = RequestHandler.ExecuteAndUnpack<List<UserObject>>(listRequest);
+            return list[0];
         }
 
         // Private stuff
