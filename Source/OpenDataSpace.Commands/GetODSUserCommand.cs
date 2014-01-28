@@ -33,6 +33,7 @@ namespace OpenDataSpace.Commands
                    ValueFromPipeline = true, ParameterSetName = "ById")]
         public long[] Id { get; set; }
 
+        [Alias("Name")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = true, 
                    ValueFromPipelineByPropertyName = true, ParameterSetName = "Query")]
         public string UserName { get; set; }

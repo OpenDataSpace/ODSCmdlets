@@ -39,8 +39,11 @@
   <ItemGroup>
     <Compile Include="ConnectCmdletsTests.cs" />
     <Compile Include="GroupCmdletsTests.cs" />
+    <Compile Include="GroupMemberCmdletsTests.cs" />
+    <Compile Include="GroupMemberRequestTests.cs" />
     <Compile Include="GroupRequestTests.cs" />
     <Compile Include="ConnectRequestTests.cs" />
+    <Compile Include="GroupTestBase.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestShellInterface.cs" />
     <Compile Include="UserCmdletsTests.cs" />

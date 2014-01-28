@@ -1,4 +1,4 @@
-// ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
+﻿// ODSCmdlets - Cmdlets for Powershell and Pash for Open Data Space Management
 // Copyright (C) GRAU DATA 2013-2014
 //
 // Author(s): Stefan Burnicki <stefan.burnicki@graudata.com>
@@ -26,32 +26,37 @@ using System.Text;
 
 namespace OpenDataSpace.Commands
 {
-    [Cmdlet(VerbsCommon.Add, ODSNouns.Group, SupportsShouldProcess = true)]
-    public class AddODSGroupCommand : ODSGroupCommandBase
+    [Cmdlet(VerbsCommon.Get, ODSNouns.GroupMember, DefaultParameterSetName = "GetAll")]
+    public class GetODSGroupMemberCommand : ODSGroupCommandBase
     {
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, ValueFromPipelineByPropertyName = true)]
-        public string[] Name { get; set; }
+
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true)]
+        public string GroupName { get; set; }
 
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true)]
         public GroupScope Scope { get; set; }
 
+        [Parameter(Mandatory = false)]
+        public int Start { get; set; }
+
+        [Parameter(Mandatory = false)]
+        public int? Limit { get; set; }
+
         protected override void ProcessRecord()
         {
-            foreach (var curName in Name)
+            try
             {
-                try
+                var request = GroupMemberRequestFactory.CreateGetGroupMembersRequest(Start, Limit ?? 100,
+                    GroupName, Scope.Equals(GroupScope.Global));
+                var members = RequestHandler.ExecuteAndUnpack<List<NamedObject>>(request);
+                foreach (var member in members)
                 {
-                    var request = GroupRequestFactory.CreateAddGroupRequest(curName, Scope.Equals(GroupScope.Global));
-                    if (ShouldProcess(curName))
-                    {
-                        var data = RequestHandler.ExecuteAndUnpack<NamedObject>(request);
-                        WriteObject(data);
-                    }
+                    WriteObject(member);
                 }
-                catch (ReportableException e)
-                {
-                    WriteError(e.ErrorRecord);
-                }
+            }
+            catch (ReportableException e)
+            {
+                WriteError(e.ErrorRecord);
             }
         }
     }

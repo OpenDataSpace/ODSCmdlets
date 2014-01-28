@@ -33,15 +33,6 @@ namespace Test
         // TODO: better cleanup for added users!
         private List<long> _addedUsers = new List<long>();
 
-        // TODO: using an arbitrary user is a workaround, because we can't delete and
-        // therefore not add a user with known properties
-        private UserObject GetAbritraryUser()
-        {
-            var listRequest = UserRequestFactory.CreateQueryUserRequest(0, 1, "", "", "", "");
-            var list = RequestHandler.ExecuteAndUnpack<List<UserObject>>(listRequest);
-            return list[0];
-        }
-
         private string ArbitrarySubstring(string input)
         {
             if (String.IsNullOrEmpty(input))
