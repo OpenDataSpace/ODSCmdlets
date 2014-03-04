@@ -43,7 +43,37 @@ Add-PSSnapIn ODSCmdlets
 After this command executed successfully, you can start using all the commands.
 
 
+Using Pash
+==========
+Pash is an open source implementation of Powershell that works on many platforms, including Unix/Linux and Mac.
+Pash is still in the pre-alpha phase and not very stable, yet. However, one goal of this project is that
+the cmdlets are also usable with Pash. Indeed, some basic operations already work.
 
+Loading the compiled module
+---------------------------
+So far, Pash only supports PSSnapins, but in contrast to Powershell, it is also to load PSSnapins via file in Pash, so
+an installation of the PSSnapin is not needed (and in fact not supported at the moment).
+Simply load the PSSnapIn by calling
+```
+Add-PSSnapin /path/to/OpenDataSpace.Commands.dll
+```
+Make sure this path starts with a slash or is written as a relative path (e.g. "./OpenDataSpace.Commands.dll").
+
+Request errors
+--------------
+If you're encountering request errors that contain something about "trust", "decryption", etc, than you need to import
+some certificates for mono. This can be done e.g. by calling
+```
+mozroots --import
+```
+This is a known issue in mono and discussed for example at http://www.mono-project.com/FAQ:_Security.
+It is only necessary to run this command once, not every time the cmdlets are used.
+
+Known issues
+------------
+At the moment, Pash doesn't support parameter values from object by name, therefore many pipeline operations currently
+don't work with Pash.
+Also, Pash currently won't ask you for mandatory parameters that you haven't provided, but throw an error instead.
 
 Example Cmdlet Usage
 ====================
@@ -71,3 +101,4 @@ You can pipe various ODS cmdlets, e.g. to easily remove a user by username:
 Get-ODSUser -Name <username> -Exact | Remove-ODSUser
 ```
 The first cmdlet would get the one user who hase exactly the provided username and remove it from the DataSpace.
+	
