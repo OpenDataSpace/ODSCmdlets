@@ -63,6 +63,7 @@ namespace Test
         [Test]
         public void ConnectODSWrongAuth()
         {
+            // TODO: rework with Assert.Except or somethig
             LoginData login = new LoginData(DefaultLoginData);
             login.Password = login.Password + "foobar"; //arbitrary pw modification
             try
@@ -76,6 +77,11 @@ namespace Test
                 Assert.IsNotNull(realException, "Wrong exception thrown for failed login");
                 Assert.True(realException.Message.Contains("Error Code: 2"),
                     String.Format("Wrong error for failed login: {0}", realException.Message));
+            }
+            catch (Exception e)
+            {
+                Assert.True(false, "Wrong exception: "
+                     + e.ToString());
             }
         }
 

@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using OpenDataSpace.Commands;
+using System.Text;
 
 namespace Test
 {
@@ -53,7 +54,12 @@ namespace Test
                 results = pipeline.Invoke();
                 if (pipeline.Error.Count > 0)
                 {
-                    throw new MethodInvocationException(pipeline.Error.ToString());
+                    var sb = new StringBuilder();
+                    foreach (var error in pipeline.Error.NonBlockingRead())
+                    {
+                        sb.Append(error.ToString() + Environment.NewLine);
+                    }
+                    throw new RuntimeException(sb.ToString());
                 }
             }
             if (results == null)
@@ -76,7 +82,12 @@ namespace Test
 
         public object GetVariableValue(string variableName)
         {
-            return _runspace.SessionStateProxy.GetVariable(variableName);
+            object variable = _runspace.SessionStateProxy.GetVariable(variableName);
+            if (variable is PSObject)
+            {
+                variable = ((PSObject)variable).BaseObject;
+            }
+            return variable;
         }
 
         private void LoadODSCmdletBinary()
@@ -99,9 +110,7 @@ namespace Test
             }
             else
             {
-                //Pash can load it as a PSSnapIn, even without installation
-                throw new NotSupportedException("Non-Windows platforms are not yet supported!");
-                //Execute(String.Format("Add-PSSnapIn '{0}'", path));
+                Execute(String.Format("Add-PSSnapIn '{0}'", path));
             }
         }
     }

@@ -5,4 +5,5 @@ obj
 *.psess
 test_login.txt
 TestResults
+*.userprefs
 
